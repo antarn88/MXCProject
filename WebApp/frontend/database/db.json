@@ -1,0 +1,31 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "lastname": "Kiss",
+      "firstname": "Pista",
+      "username": "kpista",
+      "password": "pista1234",
+      "phone": "+3690111222",
+      "email": "pista@kiss.com"
+    },
+    {
+      "id": 2,
+      "lastname": "Kiss",
+      "firstname": "Laci",
+      "username": "klaci",
+      "password": "laci1234",
+      "phone": "+3690999222",
+      "email": "laci@kiss.com"
+    },
+    {
+      "id": 3,
+      "lastname": "Kiss",
+      "firstname": "Fery",
+      "username": "kferenc",
+      "password": "fery1234",
+      "phone": "+3690888222",
+      "email": "fery@kiss.com"
+    }
+  ]
+}
