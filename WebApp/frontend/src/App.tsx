@@ -1,16 +1,16 @@
 import { Route, Routes } from 'react-router';
 
-import Navbar from './components/Navbar/Navbar';
+import Header from './components/Header/Header';
 import Home from './pages/Home/Home';
 import Login from './pages/Login/Login';
 import NotFound from './pages/NotFound/NotFound';
 
-function App() {
+const App = (): JSX.Element => {
   return (
     <div className="container">
       <div className="row">
-        <div className="col-8 offset-2">
-          <Navbar />
+        <div className="col-lg-8 offset-lg-2">
+          <Header />
           <Routes>
             <Route path="/" element={<Home />}></Route>
             <Route path="/login" element={<Login />}></Route>
@@ -20,6 +20,6 @@ function App() {
       </div>
     </div>
   );
-}
+};
 
 export default App;
