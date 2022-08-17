@@ -1,8 +1,12 @@
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import Header from './Header';
 
-describe('<Header />', () => {
-  test('should display a blank login form, with remember me checked by default', async () => {
-    // ???
+describe('Header render test', () => {
+  test('Header render test', async () => {
+    render(
+      <div>
+        <Header />
+      </div>
+    );
   });
 });
