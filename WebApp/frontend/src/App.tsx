@@ -9,7 +9,7 @@ const App = (): JSX.Element => {
   return (
     <div className="container">
       <div className="row">
-        <div className="col-lg-8 offset-lg-2">
+        <div className="col-lg-8 offset-lg-2 p-2 pt-0">
           <Header />
           <Routes>
             <Route path="/" element={<Home />}></Route>
