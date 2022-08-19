@@ -41,7 +41,9 @@ const Home = () => {
                       </td>
                       <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                       <td>
-                        <i className="bi-x-lg"></i>
+                        <button type="button" className="btn btn-danger btn-sm">
+                          Törlés
+                        </button>
                       </td>
                     </tr>
                   ))}
