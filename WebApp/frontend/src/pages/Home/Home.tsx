@@ -5,6 +5,7 @@ import './Home.scss';
 import { IUser } from '../../interfaces/users/user.interface';
 import store, { RootState, useAppSelector } from '../../store/store';
 import { getUsers, deleteUser } from '../../store/users/users-api';
+import ConfirmModal from '../../components/ConfirmModal/ConfirmModal';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -15,6 +16,17 @@ const Home = () => {
   useEffect((): void => {
     store.dispatch(getUsers());
   }, []);
+
+  // TODO: Modal működése nem tökéletes, a mégse gombra kattintva is lefut ez.
+  const onClickDelete = (_userId: number | undefined) => {
+    const acceptButton = document.querySelector('#accept-button');
+    if (acceptButton) {
+      const deleteEvent = () => {
+        console.log('Törlés...');
+      };
+      acceptButton.addEventListener('click', deleteEvent, { once: true });
+    }
+  };
 
   return (
     <div className="home-container my-4">
@@ -41,7 +53,12 @@ const Home = () => {
                       </td>
                       <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                       <td>
-                        <button type="button" className="btn btn-danger btn-sm">
+                        <button
+                          type="button"
+                          className="btn btn-danger btn-sm"
+                          data-bs-toggle="modal"
+                          data-bs-target="#confirmModal"
+                          onClick={() => onClickDelete(user.id)}>
                           Törlés
                         </button>
                       </td>
@@ -53,6 +70,12 @@ const Home = () => {
           </ul>
         </div>
       )}
+      <ConfirmModal
+        title="Biztosan törli a munkatársat?"
+        confirmMessage="A törlés gombra kattintva a munkatárs kitörlődik a rendszerből!"
+        acceptButtonText="Törlés"
+        cancelButtonText="Vissza"
+      />
     </div>
   );
 };
