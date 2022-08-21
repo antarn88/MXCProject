@@ -2,3 +2,20 @@ tbody > tr:last-child > td,
 tbody > tr:last-child > th {
   border-bottom: 0;
 }
+
+.loading-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+  margin-top: 3rem;
+  gap: 1rem;
+}
+
+@media screen and (max-width: 33rem) {
+  .top-bar {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}

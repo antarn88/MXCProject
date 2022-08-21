@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router';
+import { ToastContainer, toast } from 'react-toastify';
 
 import Header from './components/Header/Header';
 import Home from './pages/Home/Home';
@@ -16,6 +17,14 @@ const App = (): JSX.Element => {
             <Route path="/login" element={<Login />}></Route>
             <Route path="*" element={<NotFound />}></Route>
           </Routes>
+          <ToastContainer
+            hideProgressBar={true}
+            position={toast.POSITION.TOP_RIGHT}
+            draggable={false}
+            closeOnClick={false}
+            theme="colored"
+            autoClose={4000}
+          />
         </div>
       </div>
     </div>
