@@ -23,7 +23,6 @@ const App = (): JSX.Element => {
             draggable={false}
             closeOnClick={false}
             theme="colored"
-            autoClose={4000}
           />
         </div>
       </div>

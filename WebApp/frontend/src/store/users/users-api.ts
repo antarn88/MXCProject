@@ -2,11 +2,13 @@ import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import { IUser } from '../../interfaces/users/user.interface';
+import { IPageOptions } from '../../interfaces/page-options.interface';
 
-export const getUsers = createAsyncThunk('users/getUsers', async (pageOptions: { start: number; end: number }) => {
-  const response = await axios.get(`${process.env.REACT_APP_API_URL}/users`);
-  console.log('pageOptions:', pageOptions);
-  return (response.data as IUser[]).slice(pageOptions.start, pageOptions.end);
+export const getUsers = createAsyncThunk('users/getUsers', async (pageOptions: IPageOptions) => {
+  const start = pageOptions.pageIndex * pageOptions.limit;
+  const end = pageOptions.pageIndex * pageOptions.limit + pageOptions.limit;
+  const response = await axios.get(`${process.env.REACT_APP_API_URL}/users?_start=${start}&_end=${end}`);
+  return response.data as IUser[];
 });
 
 export const getOneUser = createAsyncThunk('users/getOneUser', async (id: string | number) => {
