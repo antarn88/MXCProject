@@ -3,9 +3,10 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import { IUser } from '../../interfaces/users/user.interface';
 
-export const getUsers = createAsyncThunk('users/getUsers', async () => {
+export const getUsers = createAsyncThunk('users/getUsers', async (pageOptions: { start: number; end: number }) => {
   const response = await axios.get(`${process.env.REACT_APP_API_URL}/users`);
-  return response.data as IUser[];
+  console.log('pageOptions:', pageOptions);
+  return (response.data as IUser[]).slice(pageOptions.start, pageOptions.end);
 });
 
 export const getOneUser = createAsyncThunk('users/getOneUser', async (id: string | number) => {

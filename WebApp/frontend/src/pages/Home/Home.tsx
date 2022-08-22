@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import 'react-toastify/dist/ReactToastify.css';
 
 import './Home.scss';
@@ -11,6 +12,10 @@ import ConfirmModal from '../../components/ConfirmModal/ConfirmModal';
 
 const Home = () => {
   const [currentUser, setCurrentUser] = useState<IUser>();
+  const limit = 25;
+  let [start, setStart] = useState<number>(0);
+  let [end, setEnd] = useState<number>(limit);
+  let [scrollUsers, setScrollUsers] = useState<IUser[]>([]);
 
   const navigate = useNavigate();
 
@@ -34,10 +39,16 @@ const Home = () => {
     }
   };
 
+  // TODO infinity scroll még nem jó!
   const fetchUsers = async () => {
-    if ((await store.dispatch(getUsers())).meta.requestStatus === 'rejected') {
-      toast.error('Hiba a munkatársak betöltésekor!');
-    }
+    const newUserPiece = (await (await store.dispatch(getUsers({ start, end }))).payload) as IUser[];
+    setStart((start += limit));
+    setEnd((end += limit));
+    setScrollUsers([...scrollUsers, ...newUserPiece]);
+
+    // if ((await store.dispatch(getUsers())).meta.requestStatus === 'rejected') {
+    //   toast.error('Hiba a munkatársak betöltésekor!');
+    // }
   };
 
   return (
@@ -65,48 +76,52 @@ const Home = () => {
           </h4>
           <ul className="list-group list-group-flush">
             <li className="list-group-item">
-              {users.length > 0 ? (
-                <table className="table mb-0">
-                  <thead>
-                    <tr>
-                      <th scope="col" className="user-select-none">
-                        #
-                      </th>
-                      <th scope="col" className="user-select-none">
-                        Név
-                      </th>
-                      <th scope="col" className="user-select-none">
-                        CreatedAt
-                      </th>
-                      <th scope="col" className="user-select-none">
-                        Törlés
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {users.map((user: IUser) => (
-                      <tr key={user.id}>
-                        <td>{user.id}</td>
-                        <td>
-                          {user.firstname} {user.lastname}
-                        </td>
-                        <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                        <td>
-                          <button
-                            type="button"
-                            className="btn btn-danger btn-sm"
-                            data-bs-toggle="modal"
-                            data-bs-target="#confirmModal"
-                            data-backdrop="static"
-                            data-keyboard="false"
-                            onClick={() => setCurrentUser(user)}>
-                            Törlés
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              {scrollUsers!.length > 0 ? (
+                <InfiniteScroll
+                  dataLength={scrollUsers.length}
+                  next={fetchUsers}
+                  hasMore={true}
+                  loader={<h4>Loading...</h4>}
+                  endMessage={
+                    <p style={{ textAlign: 'center' }}>
+                      <b>Nincs több user.</b>
+                    </p>
+                  }
+                  children={
+                    <table className="table mb-0">
+                      <thead className="user-select-none">
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Név</th>
+                          <th scope="col">CreatedAt</th>
+                          <th scope="col">Törlés</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {scrollUsers!.map((user: IUser) => (
+                          <tr key={user.id}>
+                            <td>{user.id}</td>
+                            <td>
+                              {user.firstname} {user.lastname}
+                            </td>
+                            <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                            <td>
+                              <button
+                                type="button"
+                                className="btn btn-danger btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmModal"
+                                data-backdrop="static"
+                                data-keyboard="false"
+                                onClick={() => setCurrentUser(user)}>
+                                Törlés
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  }></InfiniteScroll>
               ) : (
                 <div>Jelenleg nincsenek munkatársak.</div>
               )}
