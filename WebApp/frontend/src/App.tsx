@@ -11,7 +11,9 @@ const App = (): JSX.Element => {
     <div className="container">
       <div className="row">
         <div className="col-lg-8 offset-lg-2 p-2 pt-0">
-          <Header />
+          <div className="sticky-top">
+            <Header />
+          </div>
           <Routes>
             <Route path="/" element={<Home />}></Route>
             <Route path="/login" element={<Login />}></Route>
