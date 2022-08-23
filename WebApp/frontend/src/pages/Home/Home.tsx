@@ -16,6 +16,8 @@ const Home = () => {
   const [currentUser, setCurrentUser] = useState<IUser>();
   const [pageIndex, setPageIndex] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const [orderBy, setOrderBy] = useState<string>('firstname');
+  const [order, setOrder] = useState<string>('asc');
   const [displayedUsers, setDisplayedUsers] = useState<IUser[]>([]);
 
   const { isLoading, error } = useAppSelector((state: RootState) => state.users);
@@ -24,6 +26,18 @@ const Home = () => {
   useEffect((): void => {
     fetchUsers();
   }, []);
+
+  const onClickColumnName = (columnName: string) => {
+    if (orderBy !== columnName) {
+      setOrderBy(columnName);
+      refreshTableAfterSorting();
+    }
+  };
+
+  const onClickSorting = (): void => {
+    setOrder((previousValue: string) => (previousValue === 'asc' ? 'desc' : 'asc'));
+    refreshTableAfterSorting();
+  };
 
   const confirmedEvent = async (): Promise<void> => {
     if (currentUser && currentUser.id) {
@@ -38,8 +52,20 @@ const Home = () => {
     }
   };
 
+  const refreshTableAfterSorting = async (): Promise<void> => {
+    setDisplayedUsers([]);
+    setPageIndex(0);
+    const request = await store.dispatch(getUsers({ orderBy, order, pageIndex, limit: pageSize }));
+    if (request.meta.requestStatus === 'fulfilled') {
+      const userListPiece = request.payload as IUser[];
+      setDisplayedUsers(userListPiece);
+    } else {
+      toast.error('Hiba a munkatársak betöltésekor!', { autoClose: 8000 });
+    }
+  };
+
   const fetchUsers = async (): Promise<void> => {
-    const request = await store.dispatch(getUsers({ pageIndex, limit: pageSize }));
+    const request = await store.dispatch(getUsers({ pageIndex, limit: pageSize, order, orderBy }));
     if (request.meta.requestStatus === 'fulfilled') {
       const userListPiece = request.payload as IUser[];
       setPageIndex((previousPage: number) => previousPage + 1);
@@ -85,16 +111,46 @@ const Home = () => {
                   <table className="table mb-0">
                     <thead className="user-select-none">
                       <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Név</th>
-                        <th scope="col">CreatedAt</th>
-                        <th scope="col">Törlés</th>
+                        <th scope="col" className="d-flex gap-1">
+                          <span className="cursor-pointer text-uppercase" onClick={() => onClickColumnName('firstname')}>
+                            Név
+                          </span>
+                          {orderBy === 'firstname' && order === 'asc' && (
+                            <span className="material-icons d-flex cursor-pointer" onClick={onClickSorting}>
+                              arrow_upward
+                            </span>
+                          )}
+                          {orderBy === 'firstname' && order === 'desc' && (
+                            <span className="material-icons d-flex cursor-pointer" onClick={onClickSorting}>
+                              arrow_downward
+                            </span>
+                          )}
+                        </th>
+                        <th scope="col">
+                          <span className="d-flex gap-1">
+                            <span className="cursor-pointer text-uppercase" onClick={() => onClickColumnName('createdAt')}>
+                              CreatedAt
+                            </span>
+                            {orderBy === 'createdAt' && order === 'asc' && (
+                              <span className="material-icons d-flex cursor-pointer" onClick={onClickSorting}>
+                                arrow_upward
+                              </span>
+                            )}
+                            {orderBy === 'createdAt' && order === 'desc' && (
+                              <span className="material-icons d-flex cursor-pointer" onClick={onClickSorting}>
+                                arrow_downward
+                              </span>
+                            )}
+                          </span>
+                        </th>
+                        <th scope="col" className="text-uppercase">
+                          Törlés
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {displayedUsers.map((user: IUser) => (
                         <tr key={user.id}>
-                          <td>{user.id}</td>
                           <td>
                             {user.firstname} {user.lastname}
                           </td>

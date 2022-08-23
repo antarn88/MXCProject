@@ -14,14 +14,13 @@ const ConfirmModal = (props: IConfirmModalProps): JSX.Element => {
               <div className="modal-footer">
                 <button
                   type="button"
-                  disabled
-                  className="btn btn-danger"
+                  className="btn btn-danger disabled"
                   id="accept-button"
                   onClick={() => props.confirmedEvent()}>
                   <span className="spinner-border spinner-border-sm"></span>
                   <span> Törlés...</span>
                 </button>
-                <button type="button" className="btn btn-secondary" id="cancel-button" data-bs-dismiss="modal" disabled>
+                <button type="button" className="btn btn-secondary disabled" id="cancel-button" data-bs-dismiss="modal">
                   Vissza
                 </button>
               </div>

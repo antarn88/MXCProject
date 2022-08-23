@@ -5,9 +5,14 @@ import { IUser } from '../../interfaces/users/user.interface';
 import { IPageOptions } from '../../interfaces/page-options.interface';
 
 export const getUsers = createAsyncThunk('users/getUsers', async (pageOptions: IPageOptions) => {
-  const start = pageOptions.pageIndex * pageOptions.limit;
-  const end = pageOptions.pageIndex * pageOptions.limit + pageOptions.limit;
-  const response = await axios.get(`${process.env.REACT_APP_API_URL}/users?_start=${start}&_end=${end}`);
+  const sort = pageOptions.orderBy;
+  const order = pageOptions.order;
+  const page = pageOptions.pageIndex;
+  const limit = pageOptions.limit;
+
+  const response = await axios.get(
+    `${process.env.REACT_APP_API_URL}/users?_sort=${sort}&_order=${order}&_page=${page}&_limit=${limit}`
+  );
   return response.data as IUser[];
 });
 
