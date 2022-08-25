@@ -93,6 +93,7 @@ const Home = () => {
     <div className="home-container my-4">
       <div className="card">
         <h4 className="card-header text-uppercase p-3">
+          {/* TABLE CARD HEADER */}
           <div className="d-flex justify-content-between user-select-none top-bar">
             <div className="d-flex align-items-center gap-2">
               <span className="material-icons-outlined">person</span>
@@ -106,7 +107,10 @@ const Home = () => {
         </h4>
         <ul className="list-group list-group-flush">
           <li className="list-group-item">
+            {/* LOADING */}
             {isLoading && !errorAtGetUsers && <div>{isLoading && <Loading loadingText="Munkatársak betöltése..." />}</div>}
+
+            {/* TABLE */}
             {displayedUsers.length > 0 && (
               <InfiniteScroll
                 dataLength={displayedUsers.length}
@@ -184,10 +188,14 @@ const Home = () => {
                   </table>
                 }></InfiniteScroll>
             )}
+
+            {/* EMPTY CALLOUT */}
             {!errorAtGetUsers && !isLoading && !displayedUsers.length && <div>Jelenleg nincsenek munkatársak.</div>}
           </li>
         </ul>
       </div>
+
+      {/* CONFIRM MODAL */}
       <ConfirmModal isLoading={isLoading} confirmedEvent={confirmedEvent} />
     </div>
   );
