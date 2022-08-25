@@ -20,7 +20,7 @@ const Home = () => {
   const [order, setOrder] = useState<OrderOption>(OrderOption.ASC);
   const [displayedUsers, setDisplayedUsers] = useState<IUser[]>([]);
 
-  const { isLoading, error } = useAppSelector((state: RootState) => state.users);
+  const { users, isLoading, error } = useAppSelector((state: RootState) => state.users);
   const { errorAtGetUsers } = error;
 
   const pageSize = 25;
@@ -91,6 +91,9 @@ const Home = () => {
 
   return (
     <div className="home-container my-4">
+      {/* CONFIRM MODAL */}
+      <ConfirmModal isLoading={isLoading} confirmedEvent={confirmedEvent} />
+
       <div className="card">
         <h4 className="card-header text-uppercase p-3">
           {/* TABLE CARD HEADER */}
@@ -108,7 +111,14 @@ const Home = () => {
         <ul className="list-group list-group-flush">
           <li className="list-group-item">
             {/* LOADING */}
-            {isLoading && !errorAtGetUsers && <div>{isLoading && <Loading loadingText="Munkatársak betöltése..." />}</div>}
+            {isLoading && !errorAtGetUsers && (
+              <div>
+                <Loading loadingText="Munkatársak betöltése..." />
+              </div>
+            )}
+
+            {/* EMPTY CALLOUT */}
+            {!isLoading && !errorAtGetUsers && !users.length && <div>Jelenleg nincsenek munkatársak.</div>}
 
             {/* TABLE */}
             {displayedUsers.length > 0 && (
@@ -188,15 +198,9 @@ const Home = () => {
                   </table>
                 }></InfiniteScroll>
             )}
-
-            {/* EMPTY CALLOUT */}
-            {!errorAtGetUsers && !isLoading && !displayedUsers.length && <div>Jelenleg nincsenek munkatársak.</div>}
           </li>
         </ul>
       </div>
-
-      {/* CONFIRM MODAL */}
-      <ConfirmModal isLoading={isLoading} confirmedEvent={confirmedEvent} />
     </div>
   );
 };
