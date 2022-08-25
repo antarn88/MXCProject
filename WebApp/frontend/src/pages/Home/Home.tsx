@@ -8,73 +8,80 @@ import store, { RootState, useAppSelector } from '../../store/store';
 import { getUsers, deleteUser } from '../../store/users/users-api';
 import ConfirmModal from '../../components/ConfirmModal/ConfirmModal';
 import Loading from '../../components/Loading/Loading';
+import { OrderOption } from '../../enums/order-option.enum';
+import { OrderByOption } from '../../enums/order-by-option.enum';
 import './Home.scss';
 
 const Home = () => {
-  const pageSize = 50;
-
   const [currentUser, setCurrentUser] = useState<IUser>();
   const [pageIndex, setPageIndex] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(true);
-  const [orderBy, setOrderBy] = useState<string>('firstname');
-  const [order, setOrder] = useState<string>('asc');
+  const [orderBy, setOrderBy] = useState<OrderByOption>(OrderByOption.FIRSTNAME);
+  const [order, setOrder] = useState<OrderOption>(OrderOption.ASC);
   const [displayedUsers, setDisplayedUsers] = useState<IUser[]>([]);
 
   const { isLoading, error } = useAppSelector((state: RootState) => state.users);
   const { errorAtGetUsers } = error;
 
-  useEffect((): void => {
-    fetchUsers();
-  }, []);
+  const pageSize = 25;
 
-  const onClickColumnName = (columnName: string) => {
+  // Reload table after sorting
+  useEffect((): void => {
+    (async (): Promise<void> => {
+      setDisplayedUsers([]);
+      const request = await store.dispatch(getUsers({ orderBy, order, pageIndex: 0, limit: pageSize }));
+      if (request.meta.requestStatus === 'fulfilled') {
+        const userListPiece = request.payload as IUser[];
+        setDisplayedUsers(userListPiece);
+        if (userListPiece.length === pageSize) {
+          setHasMore(true);
+        }
+        setPageIndex((previousValue: number) => previousValue + 1);
+      } else {
+        toast.error('Hiba a munkatársak betöltésekor!', { autoClose: 8000 });
+      }
+    })();
+  }, [order, orderBy]);
+
+  const onClickColumnName = (columnName: OrderByOption): void => {
     if (orderBy !== columnName) {
       setOrderBy(columnName);
-      refreshTableAfterSorting();
+      setPageIndex(0);
     }
   };
 
   const onClickSorting = (): void => {
-    setOrder((previousValue: string) => (previousValue === 'asc' ? 'desc' : 'asc'));
-    refreshTableAfterSorting();
+    setPageIndex(0);
+    setOrder(order === OrderOption.ASC ? OrderOption.DESC : OrderOption.ASC);
   };
 
   const confirmedEvent = async (): Promise<void> => {
     if (currentUser && currentUser.id) {
+      const cancelButton = document.querySelector('#cancel-button') as HTMLElement;
       if ((await store.dispatch(deleteUser(currentUser.id))).meta.requestStatus === 'fulfilled') {
-        (document.querySelector('#cancel-button') as HTMLElement).click();
+        cancelButton.click();
         toast.success('Sikeresen törölte a munkatársat.', { autoClose: 4000 });
         refreshTableAfterDeleteUser();
       } else {
-        (document.querySelector('#cancel-button') as HTMLElement).click();
+        cancelButton.click();
         toast.error('Hiba a munkatárs törlésekor!', { autoClose: 8000 });
       }
     }
   };
 
-  const refreshTableAfterSorting = async (): Promise<void> => {
-    setDisplayedUsers([]);
-    setPageIndex(0);
-    const request = await store.dispatch(getUsers({ orderBy, order, pageIndex, limit: pageSize }));
-    if (request.meta.requestStatus === 'fulfilled') {
-      const userListPiece = request.payload as IUser[];
-      setDisplayedUsers(userListPiece);
-    } else {
-      toast.error('Hiba a munkatársak betöltésekor!', { autoClose: 8000 });
-    }
-  };
-
   const fetchUsers = async (): Promise<void> => {
-    const request = await store.dispatch(getUsers({ pageIndex, limit: pageSize, order, orderBy }));
-    if (request.meta.requestStatus === 'fulfilled') {
-      const userListPiece = request.payload as IUser[];
-      setPageIndex((previousPage: number) => previousPage + 1);
-      setDisplayedUsers([...displayedUsers, ...userListPiece]);
-      if (userListPiece.length < pageSize) {
-        setHasMore(false);
+    if (pageIndex !== 0) {
+      const request = await store.dispatch(getUsers({ pageIndex, limit: pageSize, order, orderBy }));
+      if (request.meta.requestStatus === 'fulfilled') {
+        const userListPiece = request.payload as IUser[];
+        setPageIndex((previousPage: number) => previousPage + 1);
+        setDisplayedUsers([...displayedUsers, ...userListPiece]);
+        if (userListPiece.length < pageSize) {
+          setHasMore(false);
+        }
+      } else {
+        toast.error('Hiba a munkatársak betöltésekor!', { autoClose: 8000 });
       }
-    } else {
-      toast.error('Hiba a munkatársak betöltésekor!', { autoClose: 8000 });
     }
   };
 
@@ -112,15 +119,17 @@ const Home = () => {
                     <thead className="user-select-none">
                       <tr>
                         <th scope="col" className="d-flex gap-1">
-                          <span className="cursor-pointer text-uppercase" onClick={() => onClickColumnName('firstname')}>
+                          <span
+                            className="cursor-pointer text-uppercase"
+                            onClick={() => onClickColumnName(OrderByOption.FIRSTNAME)}>
                             Név
                           </span>
-                          {orderBy === 'firstname' && order === 'asc' && (
+                          {orderBy === OrderByOption.FIRSTNAME && order === OrderOption.ASC && (
                             <span className="material-icons d-flex cursor-pointer" onClick={onClickSorting}>
                               arrow_upward
                             </span>
                           )}
-                          {orderBy === 'firstname' && order === 'desc' && (
+                          {orderBy === OrderByOption.FIRSTNAME && order === OrderOption.DESC && (
                             <span className="material-icons d-flex cursor-pointer" onClick={onClickSorting}>
                               arrow_downward
                             </span>
@@ -128,15 +137,17 @@ const Home = () => {
                         </th>
                         <th scope="col">
                           <span className="d-flex gap-1">
-                            <span className="cursor-pointer text-uppercase" onClick={() => onClickColumnName('createdAt')}>
+                            <span
+                              className="cursor-pointer text-uppercase"
+                              onClick={() => onClickColumnName(OrderByOption.CREATED_AT)}>
                               CreatedAt
                             </span>
-                            {orderBy === 'createdAt' && order === 'asc' && (
+                            {orderBy === OrderByOption.CREATED_AT && order === OrderOption.ASC && (
                               <span className="material-icons d-flex cursor-pointer" onClick={onClickSorting}>
                                 arrow_upward
                               </span>
                             )}
-                            {orderBy === 'createdAt' && order === 'desc' && (
+                            {orderBy === OrderByOption.CREATED_AT && order === OrderOption.DESC && (
                               <span className="material-icons d-flex cursor-pointer" onClick={onClickSorting}>
                                 arrow_downward
                               </span>

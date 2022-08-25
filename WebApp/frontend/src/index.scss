@@ -14,3 +14,7 @@ $utilities: map-merge(
 );
 
 @import '~bootstrap/scss/bootstrap';
+
+.container {
+  min-width: 21.5625rem;
+}

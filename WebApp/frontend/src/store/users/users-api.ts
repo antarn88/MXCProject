@@ -7,7 +7,7 @@ import { IPageOptions } from '../../interfaces/page-options.interface';
 export const getUsers = createAsyncThunk('users/getUsers', async (pageOptions: IPageOptions) => {
   const sort = pageOptions.orderBy;
   const order = pageOptions.order;
-  const page = pageOptions.pageIndex;
+  const page = pageOptions.pageIndex + 1;
   const limit = pageOptions.limit;
 
   const response = await axios.get(
