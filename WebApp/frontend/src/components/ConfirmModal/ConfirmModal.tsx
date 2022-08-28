@@ -3,7 +3,7 @@ import { IConfirmModalProps } from '../../interfaces/confirm-modal/confirm-modal
 const ConfirmModal = (props: IConfirmModalProps): JSX.Element => {
   return (
     <div>
-      <div className="modal" id="confirmModal" tabIndex={-1} data-bs-backdrop="static" data-bs-keyboard="false">
+      <div className="modal fade" id="confirmModal" tabIndex={-1} data-bs-backdrop="static" data-bs-keyboard="false">
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-header">

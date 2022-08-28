@@ -5,15 +5,16 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { IUser } from '../../interfaces/users/user.interface';
 import store, { RootState, useAppSelector } from '../../store/store';
-import { getUsers, deleteUser } from '../../store/users/users-api';
+import { getUsers, deleteUser, updateUser } from '../../store/users/users-api';
 import ConfirmModal from '../../components/ConfirmModal/ConfirmModal';
 import Loading from '../../components/Loading/Loading';
 import { OrderOption } from '../../enums/order-option.enum';
 import { OrderByOption } from '../../enums/order-by-option.enum';
 import './Home.scss';
+import UserEditor from '../../components/UserEditorModal/UserEditor';
 
 const Home = () => {
-  const [currentUser, setCurrentUser] = useState<IUser>();
+  const [currentUser, setCurrentUser] = useState<IUser | null>(null);
   const [pageIndex, setPageIndex] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [orderBy, setOrderBy] = useState<OrderByOption>(OrderByOption.FIRSTNAME);
@@ -89,8 +90,29 @@ const Home = () => {
     setDisplayedUsers(displayedUsers.filter((user: IUser) => currentUser?.id !== user.id));
   };
 
+  const onClickUser = (user: IUser) => setCurrentUser(user);
+
+  // TODO rendbe kell tenni a mentést, és a user létrehozást megoldani!
+  const saveUser = async (user: IUser) => {
+    if (user) {
+      const cancelButton = document.querySelector('#cancel-button') as HTMLElement;
+      if ((await store.dispatch(updateUser(user))).meta.requestStatus === 'fulfilled') {
+        cancelButton.click();
+        toast.success('Sikeresen mentette a munkatársat.', { autoClose: 4000 });
+        fetchUsers();
+        // refreshTableAfterDeleteUser();
+      } else {
+        cancelButton.click();
+        toast.error('Hiba a munkatárs mentésekor!', { autoClose: 8000 });
+      }
+    }
+  };
+
   return (
     <div className="home-container my-4">
+      {/* USER EDITOR MODAL */}
+      <UserEditor incomingUser={currentUser} isLoading={isLoading} outputEvent={saveUser} />
+
       {/* CONFIRM MODAL */}
       <ConfirmModal isLoading={isLoading} confirmedEvent={confirmedEvent} />
 
@@ -177,9 +199,17 @@ const Home = () => {
                       {displayedUsers.map((user: IUser) => (
                         <tr key={user.id}>
                           <td>
-                            {user.firstname} {user.lastname}
+                            <span
+                              data-bs-toggle="modal"
+                              data-bs-target="#userEditorModal"
+                              data-backdrop="static"
+                              data-keyboard="false"
+                              className="cursor-pointer"
+                              onClick={() => onClickUser(user)}>
+                              {user.firstname} {user.lastname}
+                            </span>
                           </td>
-                          <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                          <td>{new Date(user.createdAt!).toLocaleDateString()}</td>
                           <td>
                             <button
                               type="button"
