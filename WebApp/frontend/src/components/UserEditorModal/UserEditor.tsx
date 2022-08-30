@@ -1,22 +1,22 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 
-import { IUser } from '../../interfaces/users/user.interface';
 import { IUserEditorModalProps } from '../../interfaces/user-editor-modal/user-editor-modal-props.interface';
 
 const UserEditor = ({ incomingUser, isLoading, updateUserOutputEvent, createUserOutputEvent }: IUserEditorModalProps) => {
-  const initialFormData = {
-    firstname: '',
-    lastname: '',
-    username: '',
-    password: '',
-    phone: '',
-    email: '',
-  };
-
-  const [, setUser] = useState<IUser | null>(initialFormData);
+  const initialFormData = useMemo(
+    () => ({
+      firstname: '',
+      lastname: '',
+      username: '',
+      password: '',
+      phone: '',
+      email: '',
+    }),
+    []
+  );
 
   const userSchema = z.object({
     firstname: z.string().min(1, 'A keresztnév kitöltése kötelező'),
@@ -39,7 +39,6 @@ const UserEditor = ({ incomingUser, isLoading, updateUserOutputEvent, createUser
     register,
     getValues,
     setValue,
-    setFocus,
     reset,
     getFieldState,
     formState: { isValid, errors },
@@ -48,9 +47,13 @@ const UserEditor = ({ incomingUser, isLoading, updateUserOutputEvent, createUser
     resolver: zodResolver(userSchema),
   });
 
-  useEffect((): void => {
-    if (incomingUser?.id) {
-      setUser(incomingUser);
+  const setOutputEvent = () => {
+    incomingUser ? updateUserOutputEvent(getValues()) : createUserOutputEvent(getValues());
+    reset(initialFormData);
+  };
+
+  useEffect(() => {
+    if (incomingUser) {
       setValue('lastname', incomingUser.lastname, { shouldValidate: true });
       setValue('firstname', incomingUser.firstname, { shouldValidate: true });
       setValue('username', incomingUser.username, { shouldValidate: true });
@@ -58,13 +61,9 @@ const UserEditor = ({ incomingUser, isLoading, updateUserOutputEvent, createUser
       setValue('phone', incomingUser.phone, { shouldValidate: true });
       setValue('email', incomingUser.email, { shouldValidate: true });
     } else {
-      reset({ lastname: '', firstname: '', username: '', password: '', phone: '', email: '' });
+      reset(initialFormData);
     }
-  }, [incomingUser, reset, setFocus, setValue]);
-
-  const setOutputEvent = () => {
-    incomingUser ? updateUserOutputEvent(getValues()) : createUserOutputEvent(getValues());
-  };
+  }, [incomingUser, initialFormData, reset, setValue]);
 
   return (
     <div className="modal fade" id="userEditorModal" tabIndex={-1} data-bs-backdrop="static" data-bs-keyboard="false">
@@ -75,7 +74,7 @@ const UserEditor = ({ incomingUser, isLoading, updateUserOutputEvent, createUser
               <h5 className="modal-title">
                 <div className="d-flex align-items-center gap-2 text-uppercase">
                   <span className="material-icons-outlined">contact_page</span>
-                  <span>Adatok</span>
+                  {incomingUser ? <span>Adatok</span> : <span>Új munkatárs felvétele</span>}
                 </div>
               </h5>
             </div>
@@ -164,19 +163,19 @@ const UserEditor = ({ incomingUser, isLoading, updateUserOutputEvent, createUser
                 <>
                   <button type="button" className="btn btn-primary disabled" id="save-button">
                     <span className="spinner-border spinner-border-sm"></span>
-                    <span> Mentés...</span>
+                    {incomingUser ? <span> Mentés...</span> : <span> Létrehozás...</span>}
                   </button>
                   <button type="button" className="btn btn-secondary disabled" id="cancel-save-button" data-bs-dismiss="modal">
-                    Mégse
+                    {incomingUser ? <span>Vissza</span> : <span>Mégse</span>}
                   </button>
                 </>
               ) : (
                 <>
                   <button type="button" className="btn btn-primary" id="save-button" disabled={!isValid} onClick={setOutputEvent}>
-                    <span>Mentés</span>
+                    {incomingUser ? <span>Mentés</span> : <span>Létrehozás</span>}
                   </button>
                   <button type="button" className="btn btn-secondary" id="cancel-save-button" data-bs-dismiss="modal">
-                    Mégse
+                    {incomingUser ? <span>Vissza</span> : <span>Mégse</span>}
                   </button>
                 </>
               )}
