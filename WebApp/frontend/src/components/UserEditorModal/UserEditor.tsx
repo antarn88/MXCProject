@@ -1,11 +1,12 @@
-import { IUser } from '../../interfaces/users/user.interface';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useEffect, useState } from 'react';
+
+import { IUser } from '../../interfaces/users/user.interface';
 import { IUserEditorModalProps } from '../../interfaces/user-editor-modal/user-editor-modal-props.interface';
 
-const UserEditor = ({ incomingUser, isLoading, outputEvent }: IUserEditorModalProps) => {
+const UserEditor = ({ incomingUser, isLoading, updateUserOutputEvent, createUserOutputEvent }: IUserEditorModalProps) => {
   const initialFormData = {
     firstname: '',
     lastname: '',
@@ -15,15 +16,15 @@ const UserEditor = ({ incomingUser, isLoading, outputEvent }: IUserEditorModalPr
     email: '',
   };
 
-  const [user, setUser] = useState<IUser | null>(initialFormData);
+  const [, setUser] = useState<IUser | null>(initialFormData);
 
   const userSchema = z.object({
-    id: z.number(),
     firstname: z.string().min(1, 'A keresztnév kitöltése kötelező'),
     lastname: z.string().min(1, 'A vezetéknév kitöltése kötelező'),
     username: z.string().min(1, 'A felhasználónév kitöltése kötelező'),
     password: z
       .string()
+      .min(4, 'Minimum 4 karakter szükséges')
       .regex(
         /^(?=[^a-zíáéüűúöőó]*[a-zíáéüűúöőó])(?=[^A-ZÍÁÉÜŰÚÖŐÓ]*[A-ZÍÁÉÜŰÚÖŐÓ]).{2,}$/,
         'Legalább 1 kisbetűt és 1 nagybetűt tartalmaznia kell'
@@ -34,35 +35,42 @@ const UserEditor = ({ incomingUser, isLoading, outputEvent }: IUserEditorModalPr
 
   type FormSchemaType = z.infer<typeof userSchema>;
 
-  const { register, getValues, setValue, getFieldState, formState } = useForm<FormSchemaType>({
+  const {
+    register,
+    getValues,
+    setValue,
+    setFocus,
+    reset,
+    getFieldState,
+    formState: { isValid, errors },
+  } = useForm<FormSchemaType>({
     mode: 'onChange',
     resolver: zodResolver(userSchema),
   });
 
-  const { isValid, errors } = formState;
-
   useEffect((): void => {
-    if (incomingUser) {
+    if (incomingUser?.id) {
       setUser(incomingUser);
-      setValue('id', incomingUser.id || 0, { shouldValidate: true });
       setValue('lastname', incomingUser.lastname, { shouldValidate: true });
       setValue('firstname', incomingUser.firstname, { shouldValidate: true });
       setValue('username', incomingUser.username, { shouldValidate: true });
       setValue('password', incomingUser.password, { shouldValidate: true });
       setValue('phone', incomingUser.phone, { shouldValidate: true });
       setValue('email', incomingUser.email, { shouldValidate: true });
+    } else {
+      reset({ lastname: '', firstname: '', username: '', password: '', phone: '', email: '' });
     }
-  }, [incomingUser, setValue]);
+  }, [incomingUser, reset, setFocus, setValue]);
 
-  const onClickSubmit = () => {
-    console.log('submit:', getValues());
+  const setOutputEvent = () => {
+    incomingUser ? updateUserOutputEvent(getValues()) : createUserOutputEvent(getValues());
   };
 
   return (
     <div className="modal fade" id="userEditorModal" tabIndex={-1} data-bs-backdrop="static" data-bs-keyboard="false">
       <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div className="modal-content">
-          <form onSubmit={onClickSubmit}>
+          <form>
             <div className="modal-header">
               <h5 className="modal-title">
                 <div className="d-flex align-items-center gap-2 text-uppercase">
@@ -151,27 +159,27 @@ const UserEditor = ({ incomingUser, isLoading, outputEvent }: IUserEditorModalPr
               </div>
             </div>
             <div className="modal-footer">
-              {/* SAVE BUTTON */}
+              {/* SAVE AND CANCEL BUTTON */}
               {isLoading ? (
-                <button type="button" className="btn btn-primary disabled" id="save-button">
-                  <span className="spinner-border spinner-border-sm"></span>
-                  <span> Mentés...</span>
-                </button>
+                <>
+                  <button type="button" className="btn btn-primary disabled" id="save-button">
+                    <span className="spinner-border spinner-border-sm"></span>
+                    <span> Mentés...</span>
+                  </button>
+                  <button type="button" className="btn btn-secondary disabled" id="cancel-save-button" data-bs-dismiss="modal">
+                    Mégse
+                  </button>
+                </>
               ) : (
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  id="save-button"
-                  disabled={!isValid}
-                  onClick={() => outputEvent(getValues())}>
-                  <span>Mentés</span>
-                </button>
+                <>
+                  <button type="button" className="btn btn-primary" id="save-button" disabled={!isValid} onClick={setOutputEvent}>
+                    <span>Mentés</span>
+                  </button>
+                  <button type="button" className="btn btn-secondary" id="cancel-save-button" data-bs-dismiss="modal">
+                    Mégse
+                  </button>
+                </>
               )}
-
-              {/* CANCEL BUTTON */}
-              <button type="button" className="btn btn-secondary" id="cancel-button" data-bs-dismiss="modal">
-                Mégse
-              </button>
             </div>
           </form>
         </div>

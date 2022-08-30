@@ -5,13 +5,16 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { IUser } from '../../interfaces/users/user.interface';
 import store, { RootState, useAppSelector } from '../../store/store';
-import { getUsers, deleteUser, updateUser } from '../../store/users/users-api';
+import { getUsers, deleteUser, updateUser, createUser } from '../../store/users/users-api';
 import ConfirmModal from '../../components/ConfirmModal/ConfirmModal';
 import Loading from '../../components/Loading/Loading';
 import { OrderOption } from '../../enums/order-option.enum';
 import { OrderByOption } from '../../enums/order-by-option.enum';
 import './Home.scss';
 import UserEditor from '../../components/UserEditorModal/UserEditor';
+import { IApiUser } from '../../interfaces/users/api-user.interface';
+
+// TODO törlési modal nem mindig záródik be, új user után
 
 const Home = () => {
   const [currentUser, setCurrentUser] = useState<IUser | null>(null);
@@ -19,7 +22,7 @@ const Home = () => {
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [orderBy, setOrderBy] = useState<OrderByOption>(OrderByOption.FIRSTNAME);
   const [order, setOrder] = useState<OrderOption>(OrderOption.ASC);
-  const [displayedUsers, setDisplayedUsers] = useState<IUser[]>([]);
+  const [displayedUsers, setDisplayedUsers] = useState<IApiUser[]>([]);
 
   const { users, isLoading, error } = useAppSelector((state: RootState) => state.users);
   const { errorAtGetUsers } = error;
@@ -32,7 +35,7 @@ const Home = () => {
       setDisplayedUsers([]);
       const request = await store.dispatch(getUsers({ orderBy, order, pageIndex: 0, limit: pageSize }));
       if (request.meta.requestStatus === 'fulfilled') {
-        const userListPiece = request.payload as IUser[];
+        const userListPiece = request.payload as IApiUser[];
         setDisplayedUsers(userListPiece);
         if (userListPiece.length === pageSize) {
           setHasMore(true);
@@ -58,7 +61,7 @@ const Home = () => {
 
   const confirmedEvent = async (): Promise<void> => {
     if (currentUser && currentUser.id) {
-      const cancelButton = document.querySelector('#cancel-button') as HTMLElement;
+      const cancelButton = document.querySelector('#cancel-delete-button') as HTMLElement;
       if ((await store.dispatch(deleteUser(currentUser.id))).meta.requestStatus === 'fulfilled') {
         cancelButton.click();
         toast.success('Sikeresen törölte a munkatársat.', { autoClose: 4000 });
@@ -74,7 +77,7 @@ const Home = () => {
     if (pageIndex !== 0) {
       const request = await store.dispatch(getUsers({ pageIndex, limit: pageSize, order, orderBy }));
       if (request.meta.requestStatus === 'fulfilled') {
-        const userListPiece = request.payload as IUser[];
+        const userListPiece = request.payload as IApiUser[];
         setPageIndex((previousPage: number) => previousPage + 1);
         setDisplayedUsers([...displayedUsers, ...userListPiece]);
         if (userListPiece.length < pageSize) {
@@ -90,17 +93,36 @@ const Home = () => {
     setDisplayedUsers(displayedUsers.filter((user: IUser) => currentUser?.id !== user.id));
   };
 
+  const refreshTableAfterUpdateUser = (updatedUser: IUser): void => {
+    setDisplayedUsers(displayedUsers.map((user: IApiUser) => (user.id === updatedUser.id ? { ...user, ...updatedUser } : user)));
+  };
+
+  const refreshTableAfterCreateUser = async (newUser: IApiUser): Promise<void> => {
+    const newList = [...displayedUsers, newUser];
+    order === OrderOption.ASC
+      ? newList.sort((a: IApiUser, b: IApiUser) =>
+          a[orderBy].toString().toLowerCase().localeCompare(b[orderBy].toString().toLowerCase())
+        )
+      : newList.sort((a: IApiUser, b: IApiUser) =>
+          b[orderBy].toString().toLowerCase().localeCompare(a[orderBy].toString().toLowerCase())
+        );
+    setDisplayedUsers(newList);
+  };
+
   const onClickUser = (user: IUser) => setCurrentUser(user);
 
-  // TODO rendbe kell tenni a mentést, és a user létrehozást megoldani!
-  const saveUser = async (user: IUser) => {
+  const onClickCreateUser = () => {
+    setCurrentUser(null);
+  };
+
+  const onUpdateUser = async (user: IUser) => {
     if (user) {
-      const cancelButton = document.querySelector('#cancel-button') as HTMLElement;
-      if ((await store.dispatch(updateUser(user))).meta.requestStatus === 'fulfilled') {
+      const userModified = { ...user, id: currentUser?.id };
+      const cancelButton = document.querySelector('#cancel-save-button') as HTMLElement;
+      if ((await store.dispatch(updateUser(userModified))).meta.requestStatus === 'fulfilled') {
         cancelButton.click();
-        toast.success('Sikeresen mentette a munkatársat.', { autoClose: 4000 });
-        fetchUsers();
-        // refreshTableAfterDeleteUser();
+        toast.success('Sikeresen frissítette a munkatársat.', { autoClose: 4000 });
+        refreshTableAfterUpdateUser(userModified);
       } else {
         cancelButton.click();
         toast.error('Hiba a munkatárs mentésekor!', { autoClose: 8000 });
@@ -108,10 +130,31 @@ const Home = () => {
     }
   };
 
+  const onCreateUser = async (user: IUser) => {
+    if (user) {
+      const userModified = { ...user, createdAt: new Date() };
+      const cancelButton = document.querySelector('#cancel-save-button') as HTMLElement;
+      const response = await store.dispatch(createUser(userModified));
+      if (response.meta.requestStatus === 'fulfilled') {
+        cancelButton.click();
+        toast.success('Sikeresen létrehozta a munkatársat.', { autoClose: 4000 });
+        refreshTableAfterCreateUser({ ...userModified, id: response.payload.id });
+      } else {
+        cancelButton.click();
+        toast.error('Hiba a munkatárs létrehozásakor!', { autoClose: 8000 });
+      }
+    }
+  };
+
   return (
     <div className="home-container my-4">
       {/* USER EDITOR MODAL */}
-      <UserEditor incomingUser={currentUser} isLoading={isLoading} outputEvent={saveUser} />
+      <UserEditor
+        incomingUser={currentUser}
+        isLoading={isLoading}
+        updateUserOutputEvent={onUpdateUser}
+        createUserOutputEvent={onCreateUser}
+      />
 
       {/* CONFIRM MODAL */}
       <ConfirmModal isLoading={isLoading} confirmedEvent={confirmedEvent} />
@@ -124,7 +167,13 @@ const Home = () => {
               <span className="material-icons-outlined">person</span>
               <span className="mr-5"> Munkatársak</span>
             </div>
-            <button className="btn btn-primary d-flex gap-2 text-uppercase">
+            <button
+              className="btn btn-primary d-flex gap-2 text-uppercase"
+              data-bs-toggle="modal"
+              data-bs-target="#userEditorModal"
+              data-backdrop="static"
+              data-keyboard="false"
+              onClick={() => onClickCreateUser()}>
               <span className="material-icons-outlined">add</span>
               <span> Új munkatárs felvétele</span>
             </button>

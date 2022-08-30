@@ -20,7 +20,7 @@ const ConfirmModal = (props: IConfirmModalProps): JSX.Element => {
                   <span className="spinner-border spinner-border-sm"></span>
                   <span> Törlés...</span>
                 </button>
-                <button type="button" className="btn btn-secondary disabled" id="cancel-button" data-bs-dismiss="modal">
+                <button type="button" className="btn btn-secondary disabled" id="cancel-delete-button" data-bs-dismiss="modal">
                   Vissza
                 </button>
               </div>
@@ -29,7 +29,7 @@ const ConfirmModal = (props: IConfirmModalProps): JSX.Element => {
                 <button type="button" className="btn btn-danger" id="accept-button" onClick={() => props.confirmedEvent()}>
                   Törlés
                 </button>
-                <button type="button" className="btn btn-secondary" id="cancel-button" data-bs-dismiss="modal">
+                <button type="button" className="btn btn-secondary" id="cancel-delete-button" data-bs-dismiss="modal">
                   Vissza
                 </button>
               </div>
