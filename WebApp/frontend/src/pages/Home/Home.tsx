@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,7 +10,9 @@ import ConfirmDeleteModal from '../../components/ConfirmDeleteModal/ConfirmDelet
 import Loading from '../../components/Loading/Loading';
 import { OrderOption } from '../../enums/order-option.enum';
 import { OrderByOption } from '../../enums/order-by-option.enum';
-import UserEditor from '../../components/UserEditorModal/UserEditor';
+import UserEditorModal from '../../components/UserEditorModal/UserEditorModal';
+import { IUserEditorModalImperativeHandleProps } from '../../interfaces/user-editor-modal/user-editor-modal-imperative-handle-props.interface';
+import { IConfirmDeleteModalImperativeHandleProps } from '../../interfaces/confirm-delete-modal/confirm-delete-modal-imperative-handle-props.interface';
 import './Home.scss';
 
 const Home = () => {
@@ -24,25 +26,10 @@ const Home = () => {
   const { users, isLoading, error } = useAppSelector((state: RootState) => state.users);
   const { errorAtGetUsers } = error;
 
-  const pageSize = 25;
+  const userEditorModalRef = useRef<IUserEditorModalImperativeHandleProps>(null);
+  const confirmDeleteModalRef = useRef<IConfirmDeleteModalImperativeHandleProps>(null);
 
-  // Reload table after sorting
-  useEffect((): void => {
-    (async (): Promise<void> => {
-      setDisplayedUsers([]);
-      const request = await store.dispatch(getUsers({ orderBy, order, pageIndex: 0, limit: pageSize }));
-      if (request.meta.requestStatus === 'fulfilled') {
-        const userListPiece = request.payload as IUser[];
-        setDisplayedUsers(userListPiece);
-        if (userListPiece.length === pageSize) {
-          setHasMore(true);
-        }
-        setPageIndex((previousValue: number) => previousValue + 1);
-      } else {
-        toast.error('Hiba a munkatársak betöltésekor!', { autoClose: 8000 });
-      }
-    })();
-  }, [order, orderBy]);
+  const pageSize = 25;
 
   const onClickColumnName = (columnName: OrderByOption): void => {
     if (orderBy !== columnName) {
@@ -74,13 +61,12 @@ const Home = () => {
 
   const onDeleteUser = async (): Promise<void> => {
     if (currentUser?.id) {
-      const cancelButton = document.querySelector('#cancel-delete-button') as HTMLElement;
       if ((await store.dispatch(deleteUser(currentUser.id))).meta.requestStatus === 'fulfilled') {
-        cancelButton.click();
+        confirmDeleteModalRef.current?.afterSubmit();
         toast.success('Sikeresen törölte a munkatársat.', { autoClose: 4000 });
         setDisplayedUsers(displayedUsers.filter((user: IUser) => currentUser?.id !== user.id));
       } else {
-        cancelButton.click();
+        confirmDeleteModalRef.current?.afterSubmit();
         toast.error('Hiba a munkatárs törlésekor!', { autoClose: 8000 });
       }
     }
@@ -89,15 +75,13 @@ const Home = () => {
   const onUpdateUser = async (user: IUser): Promise<void> => {
     if (user) {
       const userModified = { ...user, id: currentUser?.id, createdAt: currentUser?.createdAt };
-      const cancelButton = document.querySelector('#cancel-save-button') as HTMLElement;
       if ((await store.dispatch(updateUser(userModified))).meta.requestStatus === 'fulfilled') {
-        cancelButton.click();
+        userEditorModalRef.current?.afterSubmit();
         toast.success('Sikeresen frissítette a munkatársat.', { autoClose: 4000 });
         setDisplayedUsers(
           displayedUsers.map((user: IUser) => (user.id === userModified.id ? { ...user, ...userModified } : user))
         );
       } else {
-        cancelButton.click();
         toast.error('Hiba a munkatárs mentésekor!', { autoClose: 8000 });
       }
     }
@@ -106,23 +90,41 @@ const Home = () => {
   const onCreateUser = async (user: IUser): Promise<void> => {
     if (user) {
       const userModified = { ...user, createdAt: new Date().toISOString() };
-      const cancelButton = document.querySelector('#cancel-save-button') as HTMLElement;
       const response = await store.dispatch(createUser(userModified));
       if (response.meta.requestStatus === 'fulfilled') {
-        cancelButton.click();
+        userEditorModalRef.current?.afterSubmit();
         toast.success('Sikeresen létrehozta a munkatársat.', { autoClose: 4000 });
         setDisplayedUsers([{ ...response.payload.user, password: userModified.password }, ...displayedUsers]);
       } else {
-        cancelButton.click();
         toast.error('Hiba a munkatárs létrehozásakor!', { autoClose: 8000 });
       }
     }
   };
 
+  const reloadTableAfterSorting = useCallback(async (): Promise<void> => {
+    setDisplayedUsers([]);
+    const request = await store.dispatch(getUsers({ orderBy, order, pageIndex: 0, limit: pageSize }));
+    if (request.meta.requestStatus === 'fulfilled') {
+      const userListPiece = request.payload as IUser[];
+      setDisplayedUsers(userListPiece);
+      if (userListPiece.length === pageSize) {
+        setHasMore(true);
+      }
+      setPageIndex((previousValue: number) => previousValue + 1);
+    } else {
+      toast.error('Hiba a munkatársak betöltésekor!', { autoClose: 8000 });
+    }
+  }, [order, orderBy]);
+
+  useEffect((): void => {
+    reloadTableAfterSorting();
+  }, [reloadTableAfterSorting]);
+
   return (
     <div className="home-container my-4">
       {/* USER EDITOR MODAL */}
-      <UserEditor
+      <UserEditorModal
+        ref={userEditorModalRef}
         incomingUser={currentUser}
         isLoading={isLoading}
         updateUserOutputEvent={onUpdateUser}
@@ -130,7 +132,7 @@ const Home = () => {
       />
 
       {/* CONFIRM DELETE MODAL */}
-      <ConfirmDeleteModal isLoading={isLoading} deleteUserOutputEvent={onDeleteUser} />
+      <ConfirmDeleteModal ref={confirmDeleteModalRef} isLoading={isLoading} deleteUserOutputEvent={onDeleteUser} />
 
       <div className="card">
         <h4 className="card-header text-uppercase p-3">
@@ -155,7 +157,7 @@ const Home = () => {
         <ul className="list-group list-group-flush">
           <li className="list-group-item">
             {/* LOADING */}
-            {isLoading && !errorAtGetUsers && (
+            {isLoading && !displayedUsers.length && !errorAtGetUsers && (
               <div>
                 <Loading loadingText="Munkatársak betöltése..." />
               </div>
