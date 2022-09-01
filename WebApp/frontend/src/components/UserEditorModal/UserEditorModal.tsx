@@ -1,12 +1,10 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { ForwardedRef, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo } from 'react';
+import { ForwardedRef, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 
 import { IUserEditorModalProps } from '../../interfaces/user-editor-modal/user-editor-modal-props.interface';
 import { IUserEditorModalImperativeHandleProps } from '../../interfaces/user-editor-modal/user-editor-modal-imperative-handle-props.interface';
-
-// TODO Mentés gomb legyen disabled, ha semmilyen változás nem történt update-elés esetén!
 
 const UserEditorModal = forwardRef(
   (
@@ -32,6 +30,8 @@ const UserEditorModal = forwardRef(
       []
     );
 
+    const [hasChangedForm, setHasChangedForm] = useState<boolean>(false);
+
     const userSchema = z.object({
       firstname: z.string().min(1, 'A keresztnév kitöltése kötelező'),
       lastname: z.string().min(1, 'A vezetéknév kitöltése kötelező'),
@@ -55,6 +55,7 @@ const UserEditorModal = forwardRef(
       setValue,
       reset,
       getFieldState,
+      watch,
       formState: { isValid, errors },
     } = useForm<FormSchemaType>({
       mode: 'onChange',
@@ -68,6 +69,29 @@ const UserEditorModal = forwardRef(
         (document.querySelector('#lastname') as HTMLElement).focus();
       }
     }, [incomingUser]);
+
+    const checkFormChanges = useCallback((): void => {
+      if (
+        watch('lastname') !== incomingUser?.lastname ||
+        watch('firstname') !== incomingUser?.firstname ||
+        watch('username') !== incomingUser?.username ||
+        watch('password') !== incomingUser?.password ||
+        watch('phone') !== incomingUser?.phone ||
+        watch('email') !== incomingUser?.email
+      ) {
+        setHasChangedForm(true);
+      } else {
+        setHasChangedForm(false);
+      }
+    }, [
+      incomingUser?.email,
+      incomingUser?.firstname,
+      incomingUser?.lastname,
+      incomingUser?.password,
+      incomingUser?.phone,
+      incomingUser?.username,
+      watch,
+    ]);
 
     useEffect((): void => {
       if (incomingUser) {
@@ -90,11 +114,13 @@ const UserEditorModal = forwardRef(
       };
     }, [setFocus]);
 
+    useEffect((): void => checkFormChanges(), [checkFormChanges]);
+
     return (
       <div className="modal fade" id="userEditorModal" tabIndex={-1} data-bs-backdrop="static" data-bs-keyboard="false">
         <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
           <div className="modal-content">
-            <form>
+            <form onChange={checkFormChanges}>
               <div className="modal-header">
                 <h5 className="modal-title">
                   <div className="d-flex align-items-center gap-2 text-uppercase">
@@ -206,7 +232,7 @@ const UserEditorModal = forwardRef(
                       type="button"
                       className="btn btn-primary"
                       id="save-button"
-                      disabled={!isValid}
+                      disabled={!isValid || !hasChangedForm}
                       onClick={setOutputEvent}>
                       {incomingUser ? <span>Mentés</span> : <span>Létrehozás</span>}
                     </button>
