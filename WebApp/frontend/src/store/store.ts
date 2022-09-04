@@ -5,6 +5,7 @@ import reduxThunk, { ThunkMiddleware } from 'redux-thunk';
 import type { TypedUseSelectorHook } from 'react-redux';
 
 import usersSlice from './users/users-slice';
+import authSlice from './auth/auth-slice';
 
 // MIDDLEWARES
 let middlewares: ThunkMiddleware[] = [reduxThunk];
@@ -16,6 +17,7 @@ if (process.env.NODE_ENV === 'development') {
 // STORE
 const store = configureStore({
   reducer: {
+    auth: authSlice.reducer,
     users: usersSlice.reducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(...middlewares),

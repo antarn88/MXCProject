@@ -9959,6 +9959,16 @@
       "phone": "511-401-4943",
       "email": "dlenormandrr@foxnews.com",
       "createdAt": "2021-10-18T12:12:49Z"
+    },
+    {
+      "email": "lacika@gmail.com",
+      "password": "$2a$10$tQOPbbc1lGB.AFda/ectG.DbxuR6ANJj86TVihOlIxbPI1joLBbTq",
+      "firstname": "Laci",
+      "lastname": "Maszkos",
+      "username": "lacika",
+      "phone": "100",
+      "createdAt": "2022-09-04T14:22:39.048Z",
+      "id": 1001
     }
   ]
 }
