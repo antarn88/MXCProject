@@ -22,11 +22,11 @@ const authSlice = createSlice({
     // LOGIN
     builder.addCase(login.pending, (state: IAuthState) => {
       state.isLoading = true;
-      state.error = null;
     });
     builder.addCase(login.fulfilled, (state: IAuthState, { payload }: { payload: ILoginResponse }) => {
       state.isLoggedIn = true;
       state.isLoading = false;
+      state.error = null;
       state.authData = payload;
       localStorage.setItem('email', payload.user?.email!);
       localStorage.setItem('accessToken', payload.accessToken!);
