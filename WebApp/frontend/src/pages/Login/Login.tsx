@@ -38,7 +38,7 @@ const Login = () => {
   return (
     <div className="login-wrapper mt-5">
       <div className="col-md-6 offset-md-3 form-container">
-        <h3 className="text-uppercase d-flex align-items-center mb-3 gap-2 text-primary login-title">
+        <h3 className="text-uppercase d-flex align-items-center mb-3 gap-2 text-primary user-select-none">
           <span className="material-icons-outlined">login</span>
           <span>Bejelentkezés</span>
         </h3>
