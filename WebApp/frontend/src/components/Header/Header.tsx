@@ -22,7 +22,9 @@ const Header = (): JSX.Element => {
           <div className="email-section">
             <span className="email">{authData.user?.email || localStorage.getItem('email')}</span>
             {isLoading ? (
-              <span className="logout">Logging out...</span>
+              <span className="logout" role="button">
+                Logging out...
+              </span>
             ) : (
               <span className="logout" role="button" onClick={onLogout}>
                 Logout
