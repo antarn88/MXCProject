@@ -37,7 +37,12 @@ const ConfirmDeleteModal = forwardRef(
               </div>
             ) : (
               <div className="modal-footer">
-                <button type="button" className="btn btn-danger" id="accept-button" onClick={() => deleteUserOutputEvent()}>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  id="accept-button"
+                  data-testid="accept-button"
+                  onClick={() => deleteUserOutputEvent()}>
                   Törlés
                 </button>
                 <button type="button" className="btn btn-secondary" id="cancel-delete-button" data-bs-dismiss="modal">
