@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import store, { RootState, useAppSelector } from '../../store/store';
 import { login } from '../../store/auth/auth-api';
 
-const Login = () => {
+const Login = (): JSX.Element => {
   const navigate = useNavigate();
   const loginSchema = z.object({
     username: z.string().min(1, 'A felhasználónév kitöltése kötelező'),

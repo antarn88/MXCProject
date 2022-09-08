@@ -15,7 +15,7 @@ import { IUserEditorModalImperativeHandleProps } from '../../interfaces/user-edi
 import { IConfirmDeleteModalImperativeHandleProps } from '../../interfaces/confirm-delete-modal/confirm-delete-modal-imperative-handle-props.interface';
 import './Home.scss';
 
-const Home = () => {
+const Home = (): JSX.Element => {
   const [currentUser, setCurrentUser] = useState<IUser | null>(null);
   const [pageIndex, setPageIndex] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(true);
