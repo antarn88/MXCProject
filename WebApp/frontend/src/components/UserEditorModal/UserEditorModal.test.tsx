@@ -3,8 +3,8 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import { IUser } from '../../interfaces/users/user.interface';
 import UserEditorModal from './UserEditorModal';
 
-describe('UserEditorModal render test', () => {
-  test('UserEditorModal render test', () => {
+describe('UserEditorModal render test', (): void => {
+  test('UserEditorModal render test', (): void => {
     // Arrange
     const mockUser: IUser = {
       id: 999,

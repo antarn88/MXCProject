@@ -2,8 +2,8 @@ import { render, fireEvent, screen } from '@testing-library/react';
 
 import Loading from './Loading';
 
-describe('Loading component test', () => {
-  test('Loading component test', async () => {
+describe('Loading component test', (): void => {
+  test('Loading component test', async (): Promise<void> => {
     // Arrange
     const loadingText = 'Loading...';
     render(<Loading loadingText={loadingText} />);

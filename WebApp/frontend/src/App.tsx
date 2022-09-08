@@ -3,12 +3,13 @@ import { Navigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 
 import Header from './components/Header/Header';
+import { IAuthState } from './interfaces/auth/auth-state.interface';
 import Home from './pages/Home/Home';
 import Login from './pages/Login/Login';
 import { useAppSelector, RootState } from './store/store';
 
 const App = (): JSX.Element => {
-  const { isLoggedIn } = useAppSelector((state: RootState) => state.auth);
+  const { isLoggedIn } = useAppSelector<IAuthState>((state: RootState) => state.auth);
   const hasAccessToken = (): boolean => (localStorage.getItem('accessToken') ? true : false);
 
   return (

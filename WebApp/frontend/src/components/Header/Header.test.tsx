@@ -5,8 +5,8 @@ import { MemoryRouter } from 'react-router-dom';
 import Header from './Header';
 import store from '../../store/store';
 
-describe('Header render test with router', () => {
-  test('Load header and router for it and click logout button', () => {
+describe('Header render test with router', (): void => {
+  test('Load header and router for it and click logout button', (): void => {
     // Arrange
     render(
       <Provider store={store}>

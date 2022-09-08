@@ -4,8 +4,8 @@ import { Provider } from 'react-redux';
 import Home from './Home';
 import store from '../../store/store';
 
-describe('Home component test', () => {
-  it('Home component test', async () => {
+describe('Home component test', (): void => {
+  it('Home component test', async (): Promise<void> => {
     // Arrange
     render(
       <Provider store={store}>

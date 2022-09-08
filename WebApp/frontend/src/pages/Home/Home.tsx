@@ -89,7 +89,7 @@ const Home = (): JSX.Element => {
 
   const onCreateUser = async (user: IUser): Promise<void> => {
     if (user) {
-      const userModified = { ...user, createdAt: new Date().toISOString() };
+      const userModified: IUser = { ...user, createdAt: new Date().toISOString() };
       const response = await store.dispatch(createUser(userModified));
       if (response.meta.requestStatus === 'fulfilled') {
         userEditorModalRef.current?.afterSubmit();

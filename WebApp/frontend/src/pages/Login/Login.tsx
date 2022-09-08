@@ -1,13 +1,14 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useNavigate } from 'react-router-dom';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 import store, { RootState, useAppSelector } from '../../store/store';
 import { login } from '../../store/auth/auth-api';
+import { IAuthState } from '../../interfaces/auth/auth-state.interface';
 
 const Login = (): JSX.Element => {
-  const navigate = useNavigate();
+  const navigate: NavigateFunction = useNavigate();
   const loginSchema = z.object({
     username: z.string().min(1, 'A felhasználónév kitöltése kötelező'),
     password: z.string().min(1, 'A jelszó kitöltése kötelező'),
@@ -25,7 +26,7 @@ const Login = (): JSX.Element => {
     resolver: zodResolver(loginSchema),
   });
 
-  const { isLoading, error } = useAppSelector((state: RootState) => state.auth);
+  const { isLoading, error } = useAppSelector<IAuthState>((state: RootState) => state.auth);
 
   const onLogin = async (event: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
     event.preventDefault();

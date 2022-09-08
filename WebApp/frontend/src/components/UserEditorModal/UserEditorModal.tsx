@@ -5,21 +5,25 @@ import { ForwardedRef, forwardRef, useCallback, useEffect, useImperativeHandle, 
 
 import { IUserEditorModalProps } from '../../interfaces/user-editor-modal/user-editor-modal-props.interface';
 import { IUserEditorModalImperativeHandleProps } from '../../interfaces/user-editor-modal/user-editor-modal-imperative-handle-props.interface';
+import { IUser } from '../../interfaces/users/user.interface';
 
 const UserEditorModal = forwardRef(
   (
     { incomingUser, isLoading, updateUserOutputEvent, createUserOutputEvent }: IUserEditorModalProps,
     ref: ForwardedRef<IUserEditorModalImperativeHandleProps | null>
   ) => {
-    useImperativeHandle(ref, () => ({
-      afterSubmit: (): void => {
-        (document.querySelector('#cancel-save-button') as HTMLElement).click();
-        reset(initialFormData);
-      },
-    }));
+    useImperativeHandle(
+      ref,
+      (): IUserEditorModalImperativeHandleProps => ({
+        afterSubmit: (): void => {
+          (document.querySelector('#cancel-save-button') as HTMLElement).click();
+          reset(initialFormData);
+        },
+      })
+    );
 
     const initialFormData = useMemo(
-      () => ({
+      (): IUser => ({
         firstname: '',
         lastname: '',
         username: '',
@@ -71,18 +75,14 @@ const UserEditorModal = forwardRef(
     }, [incomingUser]);
 
     const checkFormChanges = useCallback((): void => {
-      if (
-        watch('lastname') !== incomingUser?.lastname ||
-        watch('firstname') !== incomingUser?.firstname ||
-        watch('username') !== incomingUser?.username ||
-        watch('password') !== incomingUser?.password ||
-        watch('phone') !== incomingUser?.phone ||
-        watch('email') !== incomingUser?.email
-      ) {
-        setHasChangedForm(true);
-      } else {
-        setHasChangedForm(false);
-      }
+      watch('lastname') !== incomingUser?.lastname ||
+      watch('firstname') !== incomingUser?.firstname ||
+      watch('username') !== incomingUser?.username ||
+      watch('password') !== incomingUser?.password ||
+      watch('phone') !== incomingUser?.phone ||
+      watch('email') !== incomingUser?.email
+        ? setHasChangedForm(true)
+        : setHasChangedForm(false);
     }, [
       incomingUser?.email,
       incomingUser?.firstname,

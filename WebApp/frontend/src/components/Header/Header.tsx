@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
+import { IAuthState } from '../../interfaces/auth/auth-state.interface';
 
 import { logout } from '../../store/auth/auth-api';
 import store, { useAppSelector, RootState } from '../../store/store';
-
 import './Header.scss';
 
 const Header = (): JSX.Element => {
-  const { isLoading, authData } = useAppSelector((state: RootState) => state.auth);
+  const { isLoading, authData } = useAppSelector<IAuthState>((state: RootState) => state.auth);
 
   const onLogout = async () => await store.dispatch(logout());
 

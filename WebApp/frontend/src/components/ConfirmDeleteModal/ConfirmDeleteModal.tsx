@@ -1,4 +1,5 @@
 import { ForwardedRef, forwardRef, useImperativeHandle } from 'react';
+
 import { IConfirmDeleteModalImperativeHandleProps } from '../../interfaces/confirm-delete-modal/confirm-delete-modal-imperative-handle-props.interface';
 import { IConfirmDeleteModalProps } from '../../interfaces/confirm-delete-modal/confirm-delete-modal-props.interface';
 
@@ -7,11 +8,14 @@ const ConfirmDeleteModal = forwardRef(
     { deleteUserOutputEvent, isLoading }: IConfirmDeleteModalProps,
     ref: ForwardedRef<IConfirmDeleteModalImperativeHandleProps | null>
   ) => {
-    useImperativeHandle(ref, () => ({
-      afterSubmit: (): void => {
-        (document.querySelector('#cancel-delete-button') as HTMLElement).click();
-      },
-    }));
+    useImperativeHandle(
+      ref,
+      (): IConfirmDeleteModalImperativeHandleProps => ({
+        afterSubmit: (): void => {
+          (document.querySelector('#cancel-delete-button') as HTMLElement).click();
+        },
+      })
+    );
 
     return (
       <div className="modal fade" id="confirmDeleteModal" tabIndex={-1} data-bs-backdrop="static" data-bs-keyboard="false">
@@ -23,11 +27,7 @@ const ConfirmDeleteModal = forwardRef(
             <div className="modal-body">A törlés gombra kattintva a munkatárs kitörlődik a rendszerből!</div>
             {isLoading ? (
               <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-danger disabled"
-                  id="accept-button"
-                  onClick={() => deleteUserOutputEvent()}>
+                <button type="button" className="btn btn-danger disabled" id="accept-button" onClick={deleteUserOutputEvent}>
                   <span className="spinner-border spinner-border-sm"></span>
                   <span> Törlés...</span>
                 </button>
@@ -42,7 +42,7 @@ const ConfirmDeleteModal = forwardRef(
                   className="btn btn-danger"
                   id="accept-button"
                   data-testid="accept-button"
-                  onClick={() => deleteUserOutputEvent()}>
+                  onClick={deleteUserOutputEvent}>
                   Törlés
                 </button>
                 <button type="button" className="btn btn-secondary" id="cancel-delete-button" data-bs-dismiss="modal">
