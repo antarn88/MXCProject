@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { UsersModule } from './users/users.module';
 
 dotenv.config();
 
@@ -12,6 +13,7 @@ dotenv.config();
     MongooseModule.forRoot(
       `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/?retryWrites=true&w=majority`,
     ),
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
