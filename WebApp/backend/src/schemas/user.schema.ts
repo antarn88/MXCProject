@@ -3,7 +3,16 @@ import { Document } from 'mongoose';
 
 export type UserDocument = User & Document;
 
-@Schema()
+@Schema({
+  versionKey: false,
+  timestamps: { createdAt: true, updatedAt: false },
+  toJSON: {
+    transform: (_doc, ret) => {
+      ret.id = ret._id;
+      delete ret._id;
+    },
+  },
+})
 export class User {
   @Prop()
   lastname: string;
