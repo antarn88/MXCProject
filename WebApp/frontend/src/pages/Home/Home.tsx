@@ -89,12 +89,11 @@ const Home = (): JSX.Element => {
 
   const onCreateUser = async (user: IUser): Promise<void> => {
     if (user) {
-      const userModified: IUser = { ...user, createdAt: new Date().toISOString() };
-      const response = await store.dispatch(createUser(userModified));
+      const response = await store.dispatch(createUser(user));
       if (response.meta.requestStatus === 'fulfilled') {
         userEditorModalRef.current?.afterSubmit();
         toast.success('Sikeresen létrehozta a munkatársat.', { autoClose: 4000 });
-        setDisplayedUsers([{ ...response.payload.user, password: userModified.password }, ...displayedUsers]);
+        setDisplayedUsers([{ ...response.payload }, ...displayedUsers]);
       } else {
         toast.error('Hiba a munkatárs létrehozásakor!', { autoClose: 8000 });
       }

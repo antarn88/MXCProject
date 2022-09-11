@@ -4,10 +4,6 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { IUser } from '../../interfaces/users/user.interface';
 import { IPageOptions } from '../../interfaces/page-options.interface';
 
-// function sleep(ms: number) {
-//   return new Promise((resolve) => setTimeout(resolve, ms));
-// }
-
 export const getUsers = createAsyncThunk('users/getUsers', async (pageOptions: IPageOptions) => {
   const sort = pageOptions.orderBy;
   const order = pageOptions.order;
@@ -15,7 +11,7 @@ export const getUsers = createAsyncThunk('users/getUsers', async (pageOptions: I
   const limit = pageOptions.limit;
 
   const response = await axios.get(
-    `${process.env.REACT_APP_API_URL}/users?_sort=${sort}&_order=${order}&_page=${page}&_limit=${limit}`
+    `${process.env.REACT_APP_API_URL}/users?orderBy=${sort}&order=${order}&pageIndex=${page}&limit=${limit}`
   );
   return response.data as IUser[];
 });
@@ -38,6 +34,5 @@ export const updateUser = createAsyncThunk('users/updateUser', async (user: IUse
 
 export const deleteUser = createAsyncThunk('users/deleteUser', async (id: string | number) => {
   const response = await axios.delete(`${process.env.REACT_APP_API_URL}/users/${id}`);
-  // await sleep(10000);
   return response.data;
 });
