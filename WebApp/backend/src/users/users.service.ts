@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId, SortOrder } from 'mongoose';
 
 import { UserDocument } from 'src/schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,22 +15,36 @@ export class UsersService {
     return new this.userModel(createUserDto).save();
   }
 
-  async findAll() {
-    return this.userModel.find();
+  async findAll(
+    pageIndex: number,
+    limit: number,
+    order: SortOrder,
+    orderBy: string,
+  ) {
+    return this.userModel
+      .find()
+      .collation({ locale: 'hu' })
+      .sort({
+        [orderBy === 'firstname' || orderBy === 'createdAt'
+          ? orderBy
+          : 'firstname']: order ? order : 'asc',
+      })
+      .skip(pageIndex > 0 ? (pageIndex - 1) * limit : 0)
+      .limit(limit || 0);
   }
 
-  async findOne(id: string) {
+  async findOne(id: ObjectId) {
     return this.userModel.findById(id);
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: ObjectId, updateUserDto: UpdateUserDto) {
     return this.userModel.updateOne(
       { _id: id },
       { $set: { ...updateUserDto } },
     );
   }
 
-  async remove(id: string) {
+  async remove(id: ObjectId) {
     return this.userModel.deleteOne({ _id: id });
   }
 }

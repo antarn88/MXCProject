@@ -14,22 +14,36 @@ export type UserDocument = User & Document;
   },
 })
 export class User {
-  @Prop()
+  @Prop({
+    required: true,
+  })
   lastname: string;
 
-  @Prop()
+  @Prop({
+    required: true,
+  })
   firstname: string;
 
-  @Prop()
+  @Prop({
+    required: true,
+    unique: true,
+  })
   username: string;
 
-  @Prop()
+  @Prop({
+    required: true,
+  })
   password: string;
 
-  @Prop()
+  @Prop({
+    required: true,
+  })
   phone: string;
 
-  @Prop()
+  @Prop({
+    required: true,
+    unique: true,
+  })
   email: string;
 }
 
