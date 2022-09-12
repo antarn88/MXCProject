@@ -11,7 +11,7 @@ import { User } from './entities/user.entity';
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto) {
     return new this.userModel(createUserDto).save();
   }
 
@@ -33,6 +33,7 @@ export class UsersService {
       .limit(limit || 0);
   }
 
+  // TODO Nem lesz rá szükség!
   async findOne(id: ObjectId) {
     return this.userModel.findById(id);
   }
