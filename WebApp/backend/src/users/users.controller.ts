@@ -7,12 +7,15 @@ import {
   Delete,
   Put,
   Query,
+  Res,
+  Req,
 } from '@nestjs/common';
+import { ObjectId, SortOrder } from 'mongoose';
+import { Request, Response } from 'express';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ObjectId, SortOrder } from 'mongoose';
 
 @Controller('users')
 export class UsersController {
@@ -29,8 +32,33 @@ export class UsersController {
     @Query('limit') limit: number,
     @Query('order') order: SortOrder,
     @Query('orderBy') orderBy: string,
+    @Req() request: Request,
+    @Res() response: Response,
   ) {
-    return this.usersService.findAll(pageIndex, limit, order, orderBy);
+    try {
+      const users = await this.usersService.findAll(
+        pageIndex,
+        limit,
+        order,
+        orderBy,
+      );
+      response.send({
+        isSuccess: true,
+        content: {
+          results: users,
+          resultsLength: users.length,
+        },
+        statusCode: response.statusCode,
+        headers: request.headers,
+      });
+    } catch (error) {
+      response.status(400).send({
+        isSuccess: false,
+        content: error,
+        statusCode: response.statusCode,
+        headers: request.headers,
+      });
+    }
   }
 
   @Get(':id')
