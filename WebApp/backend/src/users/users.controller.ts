@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { ObjectId, SortOrder } from 'mongoose';
 import { Request, Response } from 'express';
+import * as bcrypt from 'bcrypt';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -30,10 +31,15 @@ export class UsersController {
     @Res() response: Response,
   ) {
     try {
-      const user = await this.usersService.create(createUserDto);
+      const salt = await bcrypt.genSalt();
+      const password = await bcrypt.hash(createUserDto.password, salt);
+      const user = await this.usersService.create({
+        ...createUserDto,
+        password,
+      });
       response.status(201).send({
         isSuccess: true,
-        content: { userId: user.id },
+        content: user,
         statusCode: response.statusCode,
         headers: request.headers,
       });
@@ -89,7 +95,12 @@ export class UsersController {
     @Res() response: Response,
   ) {
     try {
-      const updateResult = await this.usersService.update(id, updateUserDto);
+      const salt = await bcrypt.genSalt();
+      const password = await bcrypt.hash(updateUserDto.password, salt);
+      const updateResult = await this.usersService.update(id, {
+        ...updateUserDto,
+        password,
+      });
       if (updateResult.matchedCount) {
         response.status(200).send({
           isSuccess: true,
