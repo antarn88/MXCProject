@@ -82,30 +82,6 @@ export class UsersController {
     }
   }
 
-  @Get(':id')
-  async findOne(
-    @Param('id') id: ObjectId,
-    @Req() request: Request,
-    @Res() response: Response,
-  ) {
-    try {
-      const user = await this.usersService.findOne(id);
-      if (user.id) {
-        response.status(200).send({
-          isSuccess: true,
-          content: user,
-          statusCode: response.statusCode,
-          headers: request.headers,
-        });
-      }
-    } catch (error) {
-      response.status(400).send({
-        isSuccess: false,
-        statusCode: response.statusCode,
-      });
-    }
-  }
-
   @Put(':id')
   async update(
     @Param('id') id: ObjectId,
@@ -113,11 +89,15 @@ export class UsersController {
     @Res() response: Response,
   ) {
     try {
-      await this.usersService.update(id, updateUserDto);
-      response.status(200).send({
-        isSuccess: true,
-        statusCode: response.statusCode,
-      });
+      const updateResult = await this.usersService.update(id, updateUserDto);
+      if (updateResult.matchedCount) {
+        response.status(200).send({
+          isSuccess: true,
+          statusCode: response.statusCode,
+        });
+      } else {
+        throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
+      }
     } catch (error) {
       response.status(400).send({
         isSuccess: false,

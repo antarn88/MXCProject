@@ -33,11 +33,6 @@ export class UsersService {
       .limit(limit || 0);
   }
 
-  // TODO Nem lesz rá szükség!
-  async findOne(id: ObjectId) {
-    return this.userModel.findById(id);
-  }
-
   async update(id: ObjectId, updateUserDto: UpdateUserDto) {
     return this.userModel.updateOne(
       { _id: id },
