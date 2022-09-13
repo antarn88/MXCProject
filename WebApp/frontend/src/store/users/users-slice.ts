@@ -2,7 +2,7 @@ import { createSlice, ActionReducerMapBuilder } from '@reduxjs/toolkit';
 
 import { IUser } from '../../interfaces/users/user.interface';
 import { IUsersState } from '../../interfaces/users/users-state.interface';
-import { getUsers, getOneUser, createUser, updateUser, deleteUser } from './users-api';
+import { getUsers, createUser, updateUser, deleteUser } from './users-api';
 
 const initialState: IUsersState = {
   user: null,
@@ -10,7 +10,6 @@ const initialState: IUsersState = {
   isLoading: false,
   error: {
     errorAtGetUsers: null,
-    errorAtGetOneUser: null,
     errorAtCreateUser: null,
     errorAtUpdateUser: null,
     errorAtDeleteUser: null,
@@ -34,20 +33,6 @@ const usersSlice = createSlice({
     builder.addCase(getUsers.rejected, (state: IUsersState, action) => {
       state.isLoading = false;
       state.error.errorAtGetUsers = action.error;
-    });
-
-    // GET ONE USER
-    builder.addCase(getOneUser.pending, (state: IUsersState) => {
-      state.isLoading = true;
-      state.error.errorAtGetOneUser = null;
-    });
-    builder.addCase(getOneUser.fulfilled, (state: IUsersState, { payload }: { payload: IUser }) => {
-      state.isLoading = false;
-      state.user = payload;
-    });
-    builder.addCase(getOneUser.rejected, (state: IUsersState, action) => {
-      state.isLoading = false;
-      state.error.errorAtGetOneUser = action.error;
     });
 
     // CREATE USER

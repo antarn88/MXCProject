@@ -5,25 +5,20 @@ import { IUser } from '../../interfaces/users/user.interface';
 import { IPageOptions } from '../../interfaces/page-options.interface';
 
 export const getUsers = createAsyncThunk('users/getUsers', async (pageOptions: IPageOptions) => {
-  const sort = pageOptions.orderBy;
+  const orderBy = pageOptions.orderBy;
   const order = pageOptions.order;
-  const page = pageOptions.pageIndex + 1;
+  const pageIndex = pageOptions.pageIndex + 1;
   const limit = pageOptions.limit;
 
   const response = await axios.get(
-    `${process.env.REACT_APP_API_URL}/users?orderBy=${sort}&order=${order}&pageIndex=${page}&limit=${limit}`
+    `${process.env.REACT_APP_API_URL}/users?orderBy=${orderBy}&order=${order}&pageIndex=${pageIndex}&limit=${limit}`
   );
-  return response.data as IUser[];
-});
-
-export const getOneUser = createAsyncThunk('users/getOneUser', async (id: string | number) => {
-  const response = await axios.get(`${process.env.REACT_APP_API_URL}/users/${id}`);
-  return response.data as IUser;
+  return response.data.content.results as IUser[];
 });
 
 export const createUser = createAsyncThunk('users/createUser', async (user: IUser) => {
   const response = await axios.post(`${process.env.REACT_APP_API_URL}/users`, user);
-  return response.data;
+  return response.data.content;
 });
 
 export const updateUser = createAsyncThunk('users/updateUser', async (user: IUser) => {

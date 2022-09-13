@@ -59,6 +59,7 @@ const Home = (): JSX.Element => {
     }
   };
 
+  // TODO törlés után ID duplikációk
   const onDeleteUser = async (): Promise<void> => {
     if (currentUser?.id) {
       if ((await store.dispatch(deleteUser(currentUser.id))).meta.requestStatus === 'fulfilled') {
