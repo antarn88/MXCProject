@@ -32,11 +32,11 @@ export class UsersController {
   ) {
     try {
       const salt = await bcrypt.genSalt();
-      const password = await bcrypt.hash(createUserDto.password, salt);
-      const user = await this.usersService.create({
-        ...createUserDto,
-        password,
-      });
+      const encryptedPassword = await bcrypt.hash(createUserDto.password, salt);
+      createUserDto.password = encryptedPassword;
+
+      const user = await this.usersService.create(createUserDto);
+
       response.status(201).send({
         isSuccess: true,
         content: user,
