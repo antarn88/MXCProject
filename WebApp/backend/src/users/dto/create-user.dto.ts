@@ -1,4 +1,9 @@
-import { IsEmail, IsNotEmpty, Matches } from 'class-validator';
+import { IsEmail, IsNotEmpty, Matches, MinLength } from 'class-validator';
+
+import {
+  PASSWORD_VALIDATION_MSG,
+  PASSWORD_VALIDATION_PATTERN,
+} from 'src/app.utils';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -11,13 +16,8 @@ export class CreateUserDto {
   username: string;
 
   @IsNotEmpty()
-  @Matches(
-    /^(?=[^a-zíáéüűúöőó]*[a-zíáéüűúöőó])(?=[^A-ZÍÁÉÜŰÚÖŐÓ]*[A-ZÍÁÉÜŰÚÖŐÓ]).{2,}$/,
-    {
-      message:
-        'password must contain at least 1 lowercase and 1 uppercase letter',
-    },
-  )
+  @Matches(PASSWORD_VALIDATION_PATTERN, PASSWORD_VALIDATION_MSG)
+  @MinLength(4)
   password: string;
 
   @IsNotEmpty()
