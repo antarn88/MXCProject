@@ -59,7 +59,6 @@ const Home = (): JSX.Element => {
     }
   };
 
-  // TODO törlés után ID duplikációk
   const onDeleteUser = async (): Promise<void> => {
     if (currentUser?.id) {
       if ((await store.dispatch(deleteUser(currentUser.id))).meta.requestStatus === 'fulfilled') {
@@ -75,13 +74,10 @@ const Home = (): JSX.Element => {
 
   const onUpdateUser = async (user: IUser): Promise<void> => {
     if (user) {
-      const userModified = { ...user, id: currentUser?.id, createdAt: currentUser?.createdAt };
-      if ((await store.dispatch(updateUser(userModified))).meta.requestStatus === 'fulfilled') {
+      if ((await store.dispatch(updateUser(user))).meta.requestStatus === 'fulfilled') {
         userEditorModalRef.current?.afterSubmit();
         toast.success('Sikeresen frissítette a munkatársat.', { autoClose: 4000 });
-        setDisplayedUsers(
-          displayedUsers.map((user: IUser) => (user.id === userModified.id ? { ...user, ...userModified } : user))
-        );
+        setDisplayedUsers(displayedUsers.map((displayedUser: IUser) => (displayedUser.id === user.id ? user : displayedUser)));
       } else {
         toast.error('Hiba a munkatárs mentésekor!', { autoClose: 8000 });
       }
@@ -220,8 +216,8 @@ const Home = (): JSX.Element => {
                       </tr>
                     </thead>
                     <tbody>
-                      {displayedUsers.map((user: IUser) => (
-                        <tr key={user.id}>
+                      {displayedUsers.map((user: IUser, index: number) => (
+                        <tr key={index}>
                           <td>
                             <span
                               data-bs-toggle="modal"

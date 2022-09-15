@@ -66,7 +66,10 @@ const UserEditorModal = forwardRef(
       resolver: zodResolver(userSchema),
     });
 
-    const setOutputEvent = (): void => (incomingUser ? updateUserOutputEvent(getValues()) : createUserOutputEvent(getValues()));
+    const setOutputEvent = (): void =>
+      incomingUser
+        ? updateUserOutputEvent({ ...getValues(), id: incomingUser.id, createdAt: incomingUser.createdAt })
+        : createUserOutputEvent(getValues());
 
     const setFocus = useCallback((): void => {
       if (!incomingUser) {
