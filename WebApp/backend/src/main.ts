@@ -1,27 +1,32 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as morgan from 'morgan';
+import * as dotenv from 'dotenv';
 
 import { AppModule } from './app.module';
 import { GLOBAL_VALIDATION_PIPE } from './app.utils';
+
+dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');
+  app.use(morgan(process.env.MORGAN_FORMAT || 'tiny'));
   app.enableCors();
   app.useGlobalPipes(GLOBAL_VALIDATION_PIPE);
-  app.use(morgan('tiny'));
 
+  // Swagger section
   const config = new DocumentBuilder()
-    .setTitle('MXC Project - WebApp API')
-    .setDescription('MXC Project - WebApp API swagger documentation')
+    .setTitle(process.env.SWAGGER_TITLE)
+    .setDescription(process.env.SWAGGER_DESCRIPTION)
+    .setVersion(process.env.SWAGGER_VERSION)
+    .addTag('auth')
     .addTag('users')
-    .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs/swagger', app, document);
+  SwaggerModule.setup(process.env.SWAGGER_ENDPOINT, app, document);
 
-  await app.listen(5000);
+  await app.listen(process.env.PORT || 5000);
 }
 bootstrap();

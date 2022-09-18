@@ -33,6 +33,10 @@ export class UsersService {
       .limit(limit || 0);
   }
 
+  async findByUsername(username: string) {
+    return this.userModel.findOne({ username });
+  }
+
   async update(id: ObjectId, updateUserDto: UpdateUserDto) {
     return this.userModel.updateOne(
       { _id: id },
