@@ -54,7 +54,7 @@ const Home = (): JSX.Element => {
           setHasMore(false);
         }
       } else {
-        toast.error('Hiba a munkatársak betöltésekor!', { autoClose: 8000 });
+        toast.error('Hiba a munkatársak betöltésekor!');
       }
     }
   };
@@ -63,11 +63,11 @@ const Home = (): JSX.Element => {
     if (currentUser?.id) {
       if ((await store.dispatch(deleteUser(currentUser.id))).meta.requestStatus === 'fulfilled') {
         confirmDeleteModalRef.current?.afterSubmit();
-        toast.success('Sikeresen törölte a munkatársat.', { autoClose: 4000 });
+        toast.success('Sikeresen törölte a munkatársat.');
         setDisplayedUsers(displayedUsers.filter((user: IUser) => currentUser?.id !== user.id));
       } else {
         confirmDeleteModalRef.current?.afterSubmit();
-        toast.error('Hiba a munkatárs törlésekor!', { autoClose: 8000 });
+        toast.error('Hiba a munkatárs törlésekor!');
       }
     }
   };
@@ -76,10 +76,10 @@ const Home = (): JSX.Element => {
     if (user) {
       if ((await store.dispatch(updateUser(user))).meta.requestStatus === 'fulfilled') {
         userEditorModalRef.current?.afterSubmit();
-        toast.success('Sikeresen frissítette a munkatársat.', { autoClose: 4000 });
+        toast.success('Sikeresen frissítette a munkatársat.');
         setDisplayedUsers(displayedUsers.map((displayedUser: IUser) => (displayedUser.id === user.id ? user : displayedUser)));
       } else {
-        toast.error('Hiba a munkatárs mentésekor!', { autoClose: 8000 });
+        toast.error('Hiba a munkatárs mentésekor!');
       }
     }
   };
@@ -89,10 +89,10 @@ const Home = (): JSX.Element => {
       const response = await store.dispatch(createUser(user));
       if (response.meta.requestStatus === 'fulfilled') {
         userEditorModalRef.current?.afterSubmit();
-        toast.success('Sikeresen létrehozta a munkatársat.', { autoClose: 4000 });
+        toast.success('Sikeresen létrehozta a munkatársat.');
         setDisplayedUsers([{ ...response.payload }, ...displayedUsers]);
       } else {
-        toast.error('Hiba a munkatárs létrehozásakor!', { autoClose: 8000 });
+        toast.error('Hiba a munkatárs létrehozásakor!');
       }
     }
   };
@@ -108,7 +108,7 @@ const Home = (): JSX.Element => {
       }
       setPageIndex((previousValue: number) => previousValue + 1);
     } else {
-      toast.error('Hiba a munkatársak betöltésekor!', { autoClose: 8000 });
+      toast.error('Hiba a munkatársak betöltésekor!');
     }
   }, [order, orderBy]);
 

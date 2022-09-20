@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { FormEvent, useEffect } from 'react';
 
 import store, { RootState, useAppSelector } from '../../store/store';
 import { login } from '../../store/auth/auth-api';
@@ -26,15 +27,24 @@ const Login = (): JSX.Element => {
     resolver: zodResolver(loginSchema),
   });
 
-  const { isLoading, error } = useAppSelector<IAuthState>((state: RootState) => state.auth);
+  const { accessToken, isLoggedIn, loggedInUser, isLoading, error } = useAppSelector<IAuthState>(
+    (state: RootState) => state.auth
+  );
 
-  const onLogin = async (event: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
+  const onLogin = async (event: FormEvent) => {
     event.preventDefault();
     const loginResponse = await store.dispatch(login(watch()));
     if (loginResponse.meta.requestStatus === 'fulfilled') {
       navigate('/');
     }
   };
+
+  useEffect((): void => {
+    if (isLoggedIn && accessToken && loggedInUser) {
+      localStorage.setItem('email', loggedInUser.email);
+      localStorage.setItem('accessToken', accessToken);
+    }
+  }, [accessToken, isLoggedIn, loggedInUser]);
 
   return (
     <div className="login-wrapper mt-5">
@@ -43,7 +53,7 @@ const Login = (): JSX.Element => {
           <span className="material-icons-outlined">login</span>
           <span>Bejelentkezés</span>
         </h3>
-        <form className="p-4">
+        <form className="p-4" onSubmit={onLogin}>
           {error && (
             <div className="mb-3 alert alert-danger" role="alert">
               Hibás felhasználónév vagy jelszó!
@@ -78,12 +88,12 @@ const Login = (): JSX.Element => {
           </div>
 
           {isLoading ? (
-            <button type="button" className="btn btn-primary w-100 mt-3 disabled" onClick={onLogin}>
+            <button type="button" className="btn btn-primary w-100 mt-3 disabled">
               <span className="spinner-border spinner-border-sm"></span>
               <span> Bejelentkezés...</span>
             </button>
           ) : (
-            <button type="submit" className="btn btn-primary w-100 mt-3" disabled={!isValid} onClick={onLogin}>
+            <button type="submit" className="btn btn-primary w-100 mt-3" disabled={!isValid}>
               <span>Bejelentkezés</span>
             </button>
           )}

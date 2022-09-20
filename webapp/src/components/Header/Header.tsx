@@ -1,14 +1,12 @@
 import { Link } from 'react-router-dom';
-import { IAuthState } from '../../interfaces/auth/auth-state.interface';
 
-import { logout } from '../../store/auth/auth-api';
-import store, { useAppSelector, RootState } from '../../store/store';
+import { IAuthState } from '../../interfaces/auth/auth-state.interface';
+import { useAppSelector, RootState } from '../../store/store';
+import { logout } from '../../utils/auth-utils';
 import './Header.scss';
 
 const Header = (): JSX.Element => {
-  const { isLoading, authData } = useAppSelector<IAuthState>((state: RootState) => state.auth);
-
-  const onLogout = async () => await store.dispatch(logout());
+  const { isLoading, loggedInUser } = useAppSelector<IAuthState>((state: RootState) => state.auth);
 
   return (
     <div>
@@ -20,13 +18,13 @@ const Header = (): JSX.Element => {
         </div>
         <div className="right-side">
           <div className="email-section">
-            <span className="email">{authData.user?.email || localStorage.getItem('email')}</span>
+            <span className="email">{loggedInUser?.email || localStorage.getItem('email')}</span>
             {isLoading ? (
               <span className="logout" role="button">
                 Logging out...
               </span>
             ) : (
-              <span className="logout" role="button" onClick={onLogout}>
+              <span className="logout" role="button" onClick={logout}>
                 Logout
               </span>
             )}
