@@ -9,11 +9,10 @@ import { GLOBAL_VALIDATION_PIPE } from './app.utils';
 dotenv.config();
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
 
   app.setGlobalPrefix('api');
   app.use(morgan(process.env.MORGAN_FORMAT || 'tiny'));
-  app.enableCors();
   app.useGlobalPipes(GLOBAL_VALIDATION_PIPE);
 
   // Swagger section
