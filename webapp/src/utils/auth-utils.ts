@@ -1,4 +1,4 @@
-import axios, { AxiosPromise, AxiosRequestConfig } from 'axios';
+import axios, { AxiosError, AxiosPromise, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { decodeToken, isExpired } from 'react-jwt';
 
 import store from '../store/store';
@@ -7,15 +7,24 @@ import { logout as logoutAsyncThunk } from '../store/auth/auth-api';
 export const requestWithAuthHeader = (options: AxiosRequestConfig): AxiosPromise => {
   const client = axios.create({ baseURL: process.env.REACT_APP_API_URL });
   const accessToken = localStorage.getItem('accessToken') || '';
-  const email = localStorage.getItem('email') || '';
   const decodedToken = decodeToken(accessToken);
   const isTokenExpired = isExpired(accessToken);
 
-  if (accessToken && email && decodedToken && !isTokenExpired) {
+  if (accessToken && decodedToken && !isTokenExpired) {
     client.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
   } else {
-    window.location.href = '/login';
+    logout();
+    return client(options);
   }
+
+  client.interceptors.response.use(
+    (response: AxiosResponse) => response,
+    (error: AxiosError) => {
+      if (error.response?.status === 401) {
+        logout();
+      }
+    }
+  );
 
   return client(options);
 };

@@ -11,7 +11,6 @@ import { useAppSelector, RootState } from './store/store';
 const App = (): JSX.Element => {
   const { isLoggedIn } = useAppSelector<IAuthState>((state: RootState) => state.auth);
 
-  const hasEmail = (): boolean => (localStorage.getItem('email') ? true : false);
   const hasAccessToken = (): boolean => (localStorage.getItem('accessToken') ? true : false);
 
   return (
@@ -19,7 +18,7 @@ const App = (): JSX.Element => {
       <div className="row">
         <div className="col-lg-8 offset-lg-2 p-2 pt-0">
           {/* HEADER */}
-          {(isLoggedIn || (hasEmail() && hasAccessToken())) && (
+          {(isLoggedIn || hasAccessToken()) && (
             <div className="sticky-top">
               <Header />
             </div>
@@ -28,7 +27,7 @@ const App = (): JSX.Element => {
           {/* ROUTES */}
           <Routes>
             {/* HOME */}
-            {isLoggedIn || (hasEmail() && hasAccessToken()) ? (
+            {isLoggedIn || hasAccessToken() ? (
               <Route path="/" element={<Home />}></Route>
             ) : (
               <Route path="/" element={<Navigate to="/login" />}></Route>

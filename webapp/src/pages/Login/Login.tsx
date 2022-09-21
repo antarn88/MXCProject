@@ -56,7 +56,11 @@ const Login = (): JSX.Element => {
         <form className="p-4" onSubmit={onLogin}>
           {error && (
             <div className="mb-3 alert alert-danger" role="alert">
-              Hibás felhasználónév vagy jelszó!
+              {error.code === 'ERR_BAD_REQUEST' ? (
+                <span>Hibás felhasználónév vagy jelszó!</span>
+              ) : (
+                <span>A szerver nem elérhető!</span>
+              )}
             </div>
           )}
 
