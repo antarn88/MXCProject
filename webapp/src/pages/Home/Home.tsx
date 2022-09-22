@@ -54,7 +54,9 @@ const Home = (): JSX.Element => {
           setHasMore(false);
         }
       } else {
-        toast.error('Hiba a munkatársak betöltésekor!');
+        if (localStorage.getItem('accessToken')) {
+          toast.error('Hiba a munkatársak betöltésekor!');
+        }
       }
     }
   };
@@ -67,7 +69,9 @@ const Home = (): JSX.Element => {
         setDisplayedUsers(displayedUsers.filter((user: IUser) => currentUser?.id !== user.id));
       } else {
         confirmDeleteModalRef.current?.afterSubmit();
-        toast.error('Hiba a munkatárs törlésekor!');
+        if (localStorage.getItem('accessToken')) {
+          toast.error('Hiba a munkatárs törlésekor!');
+        }
       }
     }
   };
@@ -79,7 +83,9 @@ const Home = (): JSX.Element => {
         toast.success('Sikeresen frissítette a munkatársat.');
         setDisplayedUsers(displayedUsers.map((displayedUser: IUser) => (displayedUser.id === user.id ? user : displayedUser)));
       } else {
-        toast.error('Hiba a munkatárs mentésekor!');
+        if (localStorage.getItem('accessToken')) {
+          toast.error('Hiba a munkatárs mentésekor!');
+        }
       }
     }
   };
@@ -92,7 +98,9 @@ const Home = (): JSX.Element => {
         toast.success('Sikeresen létrehozta a munkatársat.');
         setDisplayedUsers([{ ...response.payload }, ...displayedUsers]);
       } else {
-        toast.error('Hiba a munkatárs létrehozásakor!');
+        if (localStorage.getItem('accessToken')) {
+          toast.error('Hiba a munkatárs létrehozásakor!');
+        }
       }
     }
   };
@@ -108,7 +116,9 @@ const Home = (): JSX.Element => {
       }
       setPageIndex((previousValue: number) => previousValue + 1);
     } else {
-      toast.error('Hiba a munkatársak betöltésekor!');
+      if (localStorage.getItem('accessToken')) {
+        toast.error('Hiba a munkatársak betöltésekor!');
+      }
     }
   }, [order, orderBy]);
 
