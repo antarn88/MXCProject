@@ -6,7 +6,6 @@ import * as dotenv from 'dotenv';
 import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
 import { LocalStrategy } from './local.strategy';
-import { jwtConstants } from './constants';
 import { JwtStrategy } from './jwt.strategy';
 
 dotenv.config();
@@ -16,8 +15,8 @@ dotenv.config();
     UsersModule,
     PassportModule,
     JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: jwtConstants.tokenExpirationTime },
+      secret: process.env.TOKEN_SECRET_KEY,
+      signOptions: { expiresIn: process.env.TOKEN_EXPIRATION_TIME || '1d' },
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
