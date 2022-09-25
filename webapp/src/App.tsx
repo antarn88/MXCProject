@@ -7,11 +7,10 @@ import { IAuthState } from './interfaces/auth/auth-state.interface';
 import Home from './pages/Home/Home';
 import Login from './pages/Login/Login';
 import { useAppSelector, RootState } from './store/store';
+import { hasAccessToken } from './utils/auth-utils';
 
 const App = (): JSX.Element => {
   const { isLoggedIn } = useAppSelector<IAuthState>((state: RootState) => state.auth);
-
-  const hasAccessToken = (): boolean => (localStorage.getItem('accessToken') ? true : false);
 
   return (
     <div className="container">

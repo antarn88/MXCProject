@@ -1,9 +1,6 @@
 import { IsEmail, IsNotEmpty, Matches, MinLength } from 'class-validator';
 
-import {
-  PASSWORD_VALIDATION_MSG,
-  PASSWORD_VALIDATION_PATTERN,
-} from 'src/app.utils';
+import { PASSWORD_VALIDATION_MSG, PASSWORD_VALIDATION_PATTERN } from 'src/app.utils';
 
 export class CreateUserDto {
   @IsNotEmpty()

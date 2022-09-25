@@ -18,7 +18,7 @@ const Header = (): JSX.Element => {
         </div>
         <div className="right-side">
           <div className="email-section">
-            <span className="email">{loggedInUser?.email || localStorage.getItem('email')}</span>
+            <span className="email">{loggedInUser?.email}</span>
             {isLoading ? (
               <span className="logout" role="button">
                 Logging out...

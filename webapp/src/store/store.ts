@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-// import logger from 'redux-logger';
+import logger from 'redux-logger';
 import { useSelector } from 'react-redux';
 import reduxThunk, { ThunkMiddleware } from 'redux-thunk';
 import type { TypedUseSelectorHook } from 'react-redux';
@@ -11,7 +11,7 @@ import authSlice from './auth/auth-slice';
 let middlewares: ThunkMiddleware[] = [reduxThunk];
 
 if (process.env.NODE_ENV === 'development') {
-  // middlewares = [...middlewares, logger];
+  middlewares = [...middlewares, logger];
 }
 
 // STORE

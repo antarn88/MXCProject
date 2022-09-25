@@ -3,7 +3,9 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import { ILoginResponse } from '../../interfaces/auth/login-response.interface';
 import { ILoginRequest } from '../../interfaces/auth/login-request.interface';
+import { ILoggedInUserData } from '../../interfaces/auth/logged-in-user-data.interface';
 
+// LOGIN
 export const login = createAsyncThunk('auth/login', async (loginData: ILoginRequest): Promise<ILoginResponse> => {
   const response = await axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, {
     username: loginData.username,
@@ -12,6 +14,15 @@ export const login = createAsyncThunk('auth/login', async (loginData: ILoginRequ
   return response.data as ILoginResponse;
 });
 
+// LOGOUT
 export const logout = createAsyncThunk('auth/logout', async (): Promise<void> => {
-  return new Promise((resolve) => setTimeout(resolve, 150));
+  return new Promise((resolve) => setTimeout(resolve, 0));
 });
+
+// SET LOGGED IN USER
+export const setLoggedInUser = createAsyncThunk(
+  'auth/setLoggedInUser',
+  async (loggedInUserData: ILoggedInUserData): Promise<ILoggedInUserData> => {
+    return loggedInUserData;
+  }
+);

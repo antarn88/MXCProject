@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
-import { FormEvent, useEffect } from 'react';
+import { FormEvent } from 'react';
 
 import store, { RootState, useAppSelector } from '../../store/store';
 import { login } from '../../store/auth/auth-api';
@@ -27,9 +27,7 @@ const Login = (): JSX.Element => {
     resolver: zodResolver(loginSchema),
   });
 
-  const { accessToken, isLoggedIn, loggedInUser, isLoading, error } = useAppSelector<IAuthState>(
-    (state: RootState) => state.auth
-  );
+  const { isLoading, error } = useAppSelector<IAuthState>((state: RootState) => state.auth);
 
   const onLogin = async (event: FormEvent) => {
     event.preventDefault();
@@ -38,13 +36,6 @@ const Login = (): JSX.Element => {
       navigate('/');
     }
   };
-
-  useEffect((): void => {
-    if (isLoggedIn && accessToken && loggedInUser) {
-      localStorage.setItem('email', loggedInUser.email);
-      localStorage.setItem('accessToken', accessToken);
-    }
-  }, [accessToken, isLoggedIn, loggedInUser]);
 
   return (
     <div className="login-wrapper mt-5">

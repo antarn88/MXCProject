@@ -28,11 +28,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(
-    @Body() createUserDto: CreateUserDto,
-    @Req() request: Request,
-    @Res() response: Response,
-  ) {
+  async create(@Body() createUserDto: CreateUserDto, @Req() request: Request, @Res() response: Response) {
     try {
       const salt = await bcrypt.genSalt();
       const encryptedPassword = await bcrypt.hash(createUserDto.password, salt);
@@ -62,17 +58,13 @@ export class UsersController {
     @Query('pageIndex') pageIndex: number,
     @Query('limit') limit: number,
     @Query('order') order: SortOrder,
-    @Query('orderBy') orderBy: string,
+    @Query('orderBy') orderBy: 'firstname' | 'createdAt', // TODO kiszervezni, és lekezelni
     @Req() request: Request,
     @Res() response: Response,
   ) {
     try {
-      const users = await this.usersService.findAll(
-        pageIndex,
-        limit,
-        order,
-        orderBy,
-      );
+      const users = await this.usersService.findAll(pageIndex, limit, order, orderBy);
+
       response.send({
         isSuccess: true,
         content: {
@@ -93,19 +85,45 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  async findOneById(@Param('id') id: ObjectId, @Req() request: Request, @Res() response: Response) {
+    try {
+      const user = await this.usersService.findOneById(id);
+
+      if (user) {
+        const userObj = user.toJSON();
+        delete userObj.password;
+
+        response.send({
+          isSuccess: true,
+          content: userObj,
+          statusCode: response.statusCode,
+          headers: request.headers,
+        });
+      } else {
+        response.status(404).send({
+          isSuccess: false,
+          statusCode: response.statusCode,
+        });
+      }
+    } catch (error) {
+      response.status(400).send({
+        isSuccess: false,
+        content: error,
+        statusCode: response.statusCode,
+        headers: request.headers,
+      });
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
-  async update(
-    @Param('id') id: ObjectId,
-    @Body() updateUserDto: UpdateUserDto,
-    @Res() response: Response,
-  ) {
+  async update(@Param('id') id: ObjectId, @Body() updateUserDto: UpdateUserDto, @Res() response: Response) {
     try {
       const salt = await bcrypt.genSalt();
       const password = await bcrypt.hash(updateUserDto.password, salt);
-      const updateResult = await this.usersService.update(id, {
-        ...updateUserDto,
-        password,
-      });
+      const updateResult = await this.usersService.update(id, { ...updateUserDto, password });
+
       if (updateResult.matchedCount) {
         response.status(200).send({
           isSuccess: true,
@@ -127,6 +145,7 @@ export class UsersController {
   async remove(@Param('id') id: ObjectId, @Res() response: Response) {
     try {
       const deleteResult = await this.usersService.remove(id);
+
       if (deleteResult.deletedCount) {
         response.status(200).send({
           isSuccess: true,

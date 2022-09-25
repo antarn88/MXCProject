@@ -1,18 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { IncomingHttpHeaders } from 'http';
 
 import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService,
-  ) {}
+  constructor(private usersService: UsersService, private jwtService: JwtService) {}
 
   async validateUser(username: string, pass: string) {
-    const user = await this.usersService.findByUsername(username);
+    const user = await this.usersService.findOneByUsername(username);
 
     if (!user) {
       return null;
@@ -28,8 +26,9 @@ export class AuthService {
 
     return null;
   }
-
-  async login(user, headers) {
+  // TODO any helyett típus
+  async login(user: any, headers: IncomingHttpHeaders) {
+    console.log('Login user:', user);
     const payload = { username: user.username, sub: user.id };
     const response = {
       isSuccess: true,

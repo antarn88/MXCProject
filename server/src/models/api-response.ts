@@ -1,14 +1,14 @@
 import { Error } from 'mongoose';
+import { IncomingHttpHeaders } from 'http';
 
-import { IApiHeaders } from './api-headers';
 import { ApiValidationError } from './api-validation-error';
 import { IApiAuthError } from './api-auth-error';
 
 export type ApiResponse<T> =
-  | { isSuccess: true; content?: T; statusCode: number; headers?: IApiHeaders }
+  | { isSuccess: true; content?: T; statusCode: number; headers?: IncomingHttpHeaders }
   | {
       isSuccess: false;
       content: Error | ApiValidationError | IApiAuthError;
       statusCode: number;
-      headers?: IApiHeaders;
+      headers?: IncomingHttpHeaders;
     };
