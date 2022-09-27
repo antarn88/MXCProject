@@ -7,6 +7,8 @@ import { FormEvent } from 'react';
 import store, { RootState, useAppSelector } from '../../store/store';
 import { login } from '../../store/auth/auth-api';
 import { IAuthState } from '../../interfaces/auth/auth-state.interface';
+import { removeTokenFromLocalStorage, setTokenToLocalStorage } from '../../utils/auth-utils';
+import { ILoginResponse } from '../../interfaces/auth/login-response.interface';
 
 const Login = (): JSX.Element => {
   const navigate: NavigateFunction = useNavigate();
@@ -31,8 +33,11 @@ const Login = (): JSX.Element => {
 
   const onLogin = async (event: FormEvent) => {
     event.preventDefault();
+    removeTokenFromLocalStorage();
     const loginResponse = await store.dispatch(login(watch()));
     if (loginResponse.meta.requestStatus === 'fulfilled') {
+      const loginResponseData = loginResponse.payload as ILoginResponse;
+      setTokenToLocalStorage(loginResponseData.content.accessToken || '');
       navigate('/');
     }
   };

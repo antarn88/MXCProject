@@ -2,14 +2,15 @@ import axios, { AxiosError, AxiosPromise, AxiosRequestConfig, AxiosResponse } fr
 import { decodeToken, isExpired } from 'react-jwt';
 
 import store from '../store/store';
-import { logout as logoutAsyncThunk, setLoggedInUser } from '../store/auth/auth-api';
+import { logout as logoutAsyncThunk, setAuthState } from '../store/auth/auth-api';
 import { IUser } from '../interfaces/users/user.interface';
+import { IDecodedToken } from '../interfaces/auth/decoded-token.interface';
 
 // REQUEST WITH AUTH HEADER
 export const requestWithAuthHeader = (options: AxiosRequestConfig): AxiosPromise => {
   const client = axios.create({ baseURL: process.env.REACT_APP_API_URL });
-  const accessToken = getAccessTokenFromLocalStorage();
-  const decodedToken = decodeToken(accessToken) as { exp: number; iat: number; sub: string; username: string }; //TODO kiszervezni!
+  const accessToken = getTokenFromLocalStorage();
+  const decodedToken = decodeToken(accessToken) as IDecodedToken;
   const isTokenExpired = isExpired(accessToken);
 
   if (accessToken && decodedToken && !isTokenExpired) {
@@ -22,20 +23,9 @@ export const requestWithAuthHeader = (options: AxiosRequestConfig): AxiosPromise
   client.interceptors.response.use(
     async (response: AxiosResponse) => {
       const { isLoggedIn } = store.getState().auth;
-
-      // Set user to auth state
-      if (!isLoggedIn) {
-        const userId = decodedToken.sub;
-        const resp = await axios.get(`${process.env.REACT_APP_API_URL}/users/${userId}`, {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
-
-        if (resp.data.isSuccess) {
-          const user = resp.data.content as IUser;
-          await store.dispatch(setLoggedInUser({ accessToken, user }));
-        }
+      if (!isLoggedIn && hasToken()) {
+        setAuthStateFromToken();
       }
-
       return response;
     },
     async (error: AxiosError) => {
@@ -50,12 +40,29 @@ export const requestWithAuthHeader = (options: AxiosRequestConfig): AxiosPromise
 
 // LOGOUT
 export const logout = async (): Promise<void> => {
+  removeTokenFromLocalStorage();
   await store.dispatch(logoutAsyncThunk());
+  goToLoginPage();
 };
 
-export const setUserToLocalStorage = (accessToken: string): void =>
+export const setTokenToLocalStorage = (accessToken: string): void =>
   accessToken ? localStorage.setItem('accessToken', accessToken) : undefined;
-export const removeUserFromLocalStorage = (): void => localStorage.removeItem('accessToken');
-export const getAccessTokenFromLocalStorage = (): string => localStorage.getItem('accessToken') || '';
-export const hasAccessToken = (): boolean => (localStorage.getItem('accessToken') ? true : false);
+export const removeTokenFromLocalStorage = (): void => localStorage.removeItem('accessToken');
+export const getTokenFromLocalStorage = (): string => localStorage.getItem('accessToken') || '';
+export const hasToken = (): boolean => (localStorage.getItem('accessToken') ? true : false);
 export const goToLoginPage = (): string => (window.location.href = '/login');
+export const setAuthStateFromToken = (): void => {
+  (async (): Promise<void> => {
+    const accessToken = getTokenFromLocalStorage();
+    const decodedToken = decodeToken(accessToken) as IDecodedToken;
+    const userId = decodedToken.sub;
+    const response = await axios.get(`${process.env.REACT_APP_API_URL}/users/${userId}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    if (response.data.isSuccess) {
+      const user = response.data.content as IUser;
+      await store.dispatch(setAuthState({ accessToken, user }));
+    }
+  })();
+};

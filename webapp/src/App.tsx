@@ -7,7 +7,7 @@ import { IAuthState } from './interfaces/auth/auth-state.interface';
 import Home from './pages/Home/Home';
 import Login from './pages/Login/Login';
 import { useAppSelector, RootState } from './store/store';
-import { hasAccessToken } from './utils/auth-utils';
+import { hasToken } from './utils/auth-utils';
 
 const App = (): JSX.Element => {
   const { isLoggedIn } = useAppSelector<IAuthState>((state: RootState) => state.auth);
@@ -17,7 +17,7 @@ const App = (): JSX.Element => {
       <div className="row">
         <div className="col-lg-8 offset-lg-2 p-2 pt-0">
           {/* HEADER */}
-          {(isLoggedIn || hasAccessToken()) && (
+          {(isLoggedIn || hasToken()) && (
             <div className="sticky-top">
               <Header />
             </div>
@@ -26,7 +26,7 @@ const App = (): JSX.Element => {
           {/* ROUTES */}
           <Routes>
             {/* HOME */}
-            {isLoggedIn || hasAccessToken() ? (
+            {isLoggedIn || hasToken() ? (
               <Route path="/" element={<Home />}></Route>
             ) : (
               <Route path="/" element={<Navigate to="/login" />}></Route>

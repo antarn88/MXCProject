@@ -19,9 +19,9 @@ export const logout = createAsyncThunk('auth/logout', async (): Promise<void> =>
   return new Promise((resolve) => setTimeout(resolve, 0));
 });
 
-// SET LOGGED IN USER
-export const setLoggedInUser = createAsyncThunk(
-  'auth/setLoggedInUser',
+// SET AUTH STATE
+export const setAuthState = createAsyncThunk(
+  'auth/setAuthState',
   async (loggedInUserData: ILoggedInUserData): Promise<ILoggedInUserData> => {
     return loggedInUserData;
   }
