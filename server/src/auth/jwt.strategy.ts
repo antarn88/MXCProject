@@ -3,6 +3,8 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import * as dotenv from 'dotenv';
 
+import { IDecodedToken } from 'src/models/decoded-token.interface';
+
 dotenv.config();
 
 @Injectable()
@@ -15,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload) {
+  async validate(payload: IDecodedToken) {
     return { id: payload.sub, username: payload.username };
   }
 }

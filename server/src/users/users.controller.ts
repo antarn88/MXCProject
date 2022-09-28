@@ -21,6 +21,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { OrderByOption } from './enums/order-by-option.enum';
 
 @Controller('users')
 export class UsersController {
@@ -58,7 +59,7 @@ export class UsersController {
     @Query('pageIndex') pageIndex: number,
     @Query('limit') limit: number,
     @Query('order') order: SortOrder,
-    @Query('orderBy') orderBy: 'firstname' | 'createdAt', // TODO kiszervezni, és lekezelni
+    @Query('orderBy') orderBy: OrderByOption,
     @Req() request: Request,
     @Res() response: Response,
   ) {

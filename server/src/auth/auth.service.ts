@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { IncomingHttpHeaders } from 'http';
 
+import { User, UserDocument } from 'src/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
@@ -19,16 +20,15 @@ export class AuthService {
     const isMatch = await bcrypt.compare(pass, user.password);
 
     if (user && isMatch) {
-      const result = { ...user.toJSON() };
+      const result = { ...user.toJSON() } as User;
       delete result.password;
       return result;
     }
 
     return null;
   }
-  // TODO any helyett típus
-  async login(user: any, headers: IncomingHttpHeaders) {
-    console.log('Login user:', user);
+
+  async login(user: UserDocument, headers: IncomingHttpHeaders) {
     const payload = { username: user.username, sub: user.id };
     const response = {
       isSuccess: true,

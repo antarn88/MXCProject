@@ -3,6 +3,7 @@ import { Request } from 'express';
 
 import { AuthService } from './auth/auth.service';
 import { LocalAuthGuard } from './auth/local-auth.guard';
+import { UserDocument } from './schemas/user.schema';
 
 @Controller()
 export class AppController {
@@ -11,6 +12,6 @@ export class AppController {
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
   async login(@Req() request: Request) {
-    return this.authService.login(request.user, request.headers);
+    return this.authService.login(request.user as UserDocument, request.headers);
   }
 }
