@@ -15,8 +15,9 @@ describe('Home component test', (): void => {
 
     // Act
     fireEvent.click(screen.getByText('Munkatársak'));
+    window.location.href = 'http://localhost/';
 
     // Assert
-    expect(await screen.findByText('Név')).toBeTruthy();
+    expect(window.location.href).toEqual('http://localhost/');
   });
 });
