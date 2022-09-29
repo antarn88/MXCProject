@@ -1,10 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class LocalAuthGuard extends AuthGuard('local') {
-  // TODO típusok?
-  handleRequest(err, user) {
+  handleRequest<UserDocument>(err: HttpException, user: UserDocument): UserDocument {
     if (!user) {
       throw (
         err ||

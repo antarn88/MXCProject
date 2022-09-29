@@ -1,10 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  // TODO típusok?
-  handleRequest(err, jwtPayload) {
+  handleRequest<IJwtPayload>(err: HttpException, jwtPayload: IJwtPayload): IJwtPayload {
     if (err || !jwtPayload) {
       throw (
         err ||
