@@ -1,6 +1,4 @@
-import { ObjectId } from 'mongodb';
-
 export interface IJwtPayload {
-  id: ObjectId;
+  id: string;
   username: string;
 }

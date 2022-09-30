@@ -29,7 +29,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() createUserDto: CreateUserDto, @Req() request: Request, @Res() response: Response) {
+  async create(@Body() createUserDto: CreateUserDto, @Req() request: Request, @Res() response: Response): Promise<void> {
     try {
       const salt = await bcrypt.genSalt();
       const encryptedPassword = await bcrypt.hash(createUserDto.password, salt);
@@ -62,7 +62,7 @@ export class UsersController {
     @Query('orderBy') orderBy: OrderByOption,
     @Req() request: Request,
     @Res() response: Response,
-  ) {
+  ): Promise<void> {
     try {
       const users = await this.usersService.findAll(pageIndex, limit, order, orderBy);
 
@@ -87,7 +87,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async findOneById(@Param('id') id: ObjectId, @Req() request: Request, @Res() response: Response) {
+  async findOneById(@Param('id') id: ObjectId, @Req() request: Request, @Res() response: Response): Promise<void> {
     try {
       const user = await this.usersService.findOneById(id);
 
@@ -119,7 +119,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Put(':id')
-  async update(@Param('id') id: ObjectId, @Body() updateUserDto: UpdateUserDto, @Res() response: Response) {
+  async update(@Param('id') id: ObjectId, @Body() updateUserDto: UpdateUserDto, @Res() response: Response): Promise<void> {
     try {
       const salt = await bcrypt.genSalt();
       const password = await bcrypt.hash(updateUserDto.password, salt);
@@ -143,7 +143,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async remove(@Param('id') id: ObjectId, @Res() response: Response) {
+  async remove(@Param('id') id: ObjectId, @Res() response: Response): Promise<void> {
     try {
       const deleteResult = await this.usersService.remove(id);
 

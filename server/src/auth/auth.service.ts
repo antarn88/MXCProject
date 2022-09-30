@@ -3,6 +3,8 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { IncomingHttpHeaders } from 'http';
 
+import { ApiResponse } from 'src/models/api-response';
+import { ILoginContent } from 'src/models/login-content.interface';
 import { User, UserDocument } from 'src/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 
@@ -10,7 +12,7 @@ import { UsersService } from '../users/users.service';
 export class AuthService {
   constructor(private usersService: UsersService, private jwtService: JwtService) {}
 
-  async validateUser(username: string, pass: string) {
+  async validateUser(username: string, pass: string): Promise<User> {
     const user = await this.usersService.findOneByUsername(username);
 
     if (!user) {
@@ -28,7 +30,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: UserDocument, headers: IncomingHttpHeaders) {
+  async login(user: UserDocument, headers: IncomingHttpHeaders): Promise<ApiResponse<ILoginContent>> {
     const payload = { username: user.username, sub: user.id };
     const response = {
       isSuccess: true,

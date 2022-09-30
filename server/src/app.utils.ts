@@ -1,7 +1,7 @@
 import { ValidationPipe, BadRequestException } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
 
-export const GLOBAL_VALIDATION_PIPE: ValidationPipe = new ValidationPipe({
+export const GLOBAL_VALIDATION_PIPE = new ValidationPipe({
   exceptionFactory: (validationErrors: ValidationError[] = []): BadRequestException => {
     const errors = {
       statusCode: 400,

@@ -1,9 +1,11 @@
 import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
+import { UserDocument } from 'src/schemas/user.schema';
+
 @Injectable()
 export class LocalAuthGuard extends AuthGuard('local') {
-  handleRequest<UserDocument>(err: HttpException, user: UserDocument): UserDocument {
+  handleRequest<TUser = UserDocument>(err: HttpException, user: UserDocument): TUser {
     if (!user) {
       throw (
         err ||
@@ -17,6 +19,6 @@ export class LocalAuthGuard extends AuthGuard('local') {
         })
       );
     }
-    return user;
+    return user as TUser;
   }
 }

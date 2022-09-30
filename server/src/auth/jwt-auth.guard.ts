@@ -1,9 +1,11 @@
 import { HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
+import { IJwtPayload } from 'src/models/jwt-payload.interface';
+
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  handleRequest<IJwtPayload>(err: HttpException, jwtPayload: IJwtPayload): IJwtPayload {
+  handleRequest<TUser = IJwtPayload>(err: HttpException, jwtPayload: IJwtPayload): TUser {
     if (err || !jwtPayload) {
       throw (
         err ||
@@ -17,6 +19,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         })
       );
     }
-    return jwtPayload;
+    return jwtPayload as TUser;
   }
 }

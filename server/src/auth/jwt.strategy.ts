@@ -4,6 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import * as dotenv from 'dotenv';
 
 import { IDecodedToken } from 'src/models/decoded-token.interface';
+import { IJwtPayload } from 'src/models/jwt-payload.interface';
 
 dotenv.config();
 
@@ -17,7 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: IDecodedToken) {
+  async validate(payload: IDecodedToken): Promise<IJwtPayload> {
     return { id: payload.sub, username: payload.username };
   }
 }
