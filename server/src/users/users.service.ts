@@ -7,6 +7,7 @@ import { UserDocument } from 'src/schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { OrderByOption } from './enums/order-by-option.enum';
 
 @Injectable()
 export class UsersService {
@@ -16,11 +17,15 @@ export class UsersService {
     return new this.userModel(createUserDto).save();
   }
 
-  async findAll(pageIndex: number, limit: number, order: SortOrder, orderBy: string): Promise<UserDocument[]> {
+  async findAll(pageIndex: number, limit: number, order: SortOrder, orderBy: OrderByOption): Promise<UserDocument[]> {
     return this.userModel
       .find()
       .collation({ locale: 'hu' })
-      .sort({ [orderBy === 'firstname' || orderBy === 'createdAt' ? orderBy : 'firstname']: order ? order : 'asc' })
+      .sort({
+        [orderBy === OrderByOption.FIRSTNAME || orderBy === OrderByOption.CREATED_AT ? orderBy : OrderByOption.FIRSTNAME]: order
+          ? order
+          : 'asc',
+      })
       .skip(pageIndex > 0 ? (pageIndex - 1) * limit : 0)
       .limit(limit || 0);
   }

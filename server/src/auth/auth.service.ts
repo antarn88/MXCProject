@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 import { IncomingHttpHeaders } from 'http';
+import * as bcrypt from 'bcrypt';
 
 import { ApiResponse } from 'src/models/api-response';
 import { ILoginContent } from 'src/models/login-content.interface';

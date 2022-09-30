@@ -7,7 +7,7 @@ import { IApiAuthError } from './api-auth-error';
 export type ApiResponse<T> =
   | { isSuccess: boolean; content?: T; statusCode: number; headers?: IncomingHttpHeaders }
   | {
-      isSuccess: false;
+      isSuccess: boolean;
       content: Error | ApiValidationError | IApiAuthError;
       statusCode: number;
       headers?: IncomingHttpHeaders;

@@ -19,7 +19,4 @@ export const GLOBAL_VALIDATION_PIPE = new ValidationPipe({
 });
 
 export const PASSWORD_VALIDATION_PATTERN = /^(?=[^a-zíáéüűúöőó]*[a-zíáéüűúöőó])(?=[^A-ZÍÁÉÜŰÚÖŐÓ]*[A-ZÍÁÉÜŰÚÖŐÓ]).{2,}$/;
-
-export const PASSWORD_VALIDATION_MSG = {
-  message: 'password must contain at least 1 lowercase and 1 uppercase letter',
-};
+export const PASSWORD_VALIDATION_MSG = { message: 'password must contain at least 1 lowercase and 1 uppercase letter' };
