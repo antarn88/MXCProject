@@ -5,7 +5,7 @@ import { useAppSelector, RootState } from '../../store/store';
 import { logout } from '../../utils/auth-utils';
 import './Header.scss';
 
-const Header = (): JSX.Element => {
+const Header = () => {
   const { isLoading, loggedInUser } = useAppSelector<IAuthState>((state: RootState) => state.auth);
 
   return (

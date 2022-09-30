@@ -21,7 +21,7 @@ export const requestWithAuthHeader = (options: AxiosRequestConfig): AxiosPromise
   }
 
   client.interceptors.response.use(
-    async (response: AxiosResponse) => {
+    async (response: AxiosResponse): Promise<AxiosResponse> => {
       const { isLoggedIn } = store.getState().auth;
       if (!isLoggedIn && hasToken()) {
         setAuthStateFromToken();
@@ -47,10 +47,12 @@ export const logout = async (): Promise<void> => {
 
 export const setTokenToLocalStorage = (accessToken: string): void =>
   accessToken ? localStorage.setItem('accessToken', accessToken) : undefined;
+
 export const removeTokenFromLocalStorage = (): void => localStorage.removeItem('accessToken');
 export const getTokenFromLocalStorage = (): string => localStorage.getItem('accessToken') || '';
 export const hasToken = (): boolean => (localStorage.getItem('accessToken') ? true : false);
 export const goToLoginPage = (): string => (window.location.href = '/login');
+
 export const setAuthStateFromToken = (): void => {
   (async (): Promise<void> => {
     const accessToken = getTokenFromLocalStorage();

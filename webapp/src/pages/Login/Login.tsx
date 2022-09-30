@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FormEvent } from 'react';
 
 import store, { RootState, useAppSelector } from '../../store/store';
@@ -10,8 +10,8 @@ import { IAuthState } from '../../interfaces/auth/auth-state.interface';
 import { removeTokenFromLocalStorage, setTokenToLocalStorage } from '../../utils/auth-utils';
 import { ILoginResponse } from '../../interfaces/auth/login-response.interface';
 
-const Login = (): JSX.Element => {
-  const navigate: NavigateFunction = useNavigate();
+const Login = () => {
+  const navigate = useNavigate();
   const loginSchema = z.object({
     username: z.string().min(1, 'A felhasználónév kitöltése kötelező'),
     password: z.string().min(1, 'A jelszó kitöltése kötelező'),

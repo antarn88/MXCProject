@@ -9,7 +9,7 @@ import Login from './pages/Login/Login';
 import { useAppSelector, RootState } from './store/store';
 import { hasToken } from './utils/auth-utils';
 
-const App = (): JSX.Element => {
+const App = () => {
   const { isLoggedIn } = useAppSelector<IAuthState>((state: RootState) => state.auth);
 
   return (

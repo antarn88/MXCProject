@@ -1,4 +1,5 @@
 import { SerializedError } from '@reduxjs/toolkit';
+
 import { IUser } from '../users/user.interface';
 
 export interface IAuthState {
