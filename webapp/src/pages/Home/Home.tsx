@@ -29,7 +29,7 @@ const Home = (): JSX.Element => {
   const userEditorModalRef = useRef<IUserEditorModalImperativeHandleProps>(null);
   const confirmDeleteModalRef = useRef<IConfirmDeleteModalImperativeHandleProps>(null);
 
-  const pageSize = 25;
+  const pageSize = process.env.REACT_APP_HOME_PAGE_SIZE ? parseInt(process.env.REACT_APP_HOME_PAGE_SIZE) : 25;
 
   const onClickColumnName = (columnName: OrderByOption): void => {
     if (orderBy !== columnName) {
@@ -110,7 +110,7 @@ const Home = (): JSX.Element => {
     } else {
       toast.error('Hiba a munkatársak betöltésekor!');
     }
-  }, [order, orderBy]);
+  }, [order, orderBy, pageSize]);
 
   useEffect((): void => {
     reloadTableAfterSorting();
