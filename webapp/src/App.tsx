@@ -9,12 +9,11 @@ import Login from './pages/Login/Login';
 import { useAppSelector, RootState } from './store/store';
 import { hasToken } from './utils/auth-utils';
 
-// TODO teszt?
 const App = () => {
   const { isLoggedIn } = useAppSelector<IAuthState>((state: RootState) => state.auth);
 
   return (
-    <div className="container">
+    <div className="container" data-testid="container">
       <div className="row">
         <div className="col-lg-8 offset-lg-2 p-2 pt-0">
           {/* HEADER */}
