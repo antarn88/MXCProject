@@ -1,9 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, Matches, IsEmail, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, Matches, MinLength } from 'class-validator';
 
-import { PASSWORD_VALIDATION_PATTERN, PASSWORD_VALIDATION_MSG } from 'src/app.utils';
+import { PASSWORD_VALIDATION_MSG, PASSWORD_VALIDATION_PATTERN } from 'src/app.utils';
 
-export class UpdateUserDto {
+export class UserListDto {
+  @IsNotEmpty()
+  @ApiProperty()
+  id: string;
+
   @IsNotEmpty()
   @ApiProperty()
   lastname: string;
@@ -30,4 +34,8 @@ export class UpdateUserDto {
   @IsEmail()
   @ApiProperty()
   email: string;
+
+  @IsNotEmpty()
+  @ApiProperty()
+  createdAt: string;
 }

@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { ObjectId, SortOrder } from 'mongoose';
 import { Request, Response } from 'express';
+import { ApiBearerAuth, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
 
 import { UsersService } from './users.service';
@@ -22,13 +23,23 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { OrderByOption } from './enums/order-by-option.enum';
+import { CreateUserSuccessResponse } from './api-responses/create-user-success-response';
+import { OrderOption } from 'src/enums/order-option.enum';
+import { GetUsersSuccessResponse } from './api-responses/get-users-success-response';
+import { GetUserSuccessResponse } from './api-responses/get-user-success-response';
 
 @Controller('users')
+@ApiTags('Users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  // CREATE USER
   @UseGuards(JwtAuthGuard)
   @Post()
+  @ApiBearerAuth()
+  @ApiResponse({ status: 201, description: 'Success', type: CreateUserSuccessResponse })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async create(@Body() createUserDto: CreateUserDto, @Req() request: Request, @Res() response: Response): Promise<void> {
     try {
       const salt = await bcrypt.genSalt();
@@ -53,8 +64,17 @@ export class UsersController {
     }
   }
 
+  // GET ALL USERS
   @UseGuards(JwtAuthGuard)
   @Get()
+  @ApiBearerAuth()
+  @ApiQuery({ name: 'pageIndex', type: Number, required: false })
+  @ApiQuery({ name: 'limit', type: Number, required: false })
+  @ApiQuery({ name: 'order', enum: OrderOption, required: false })
+  @ApiQuery({ name: 'orderBy', enum: OrderByOption, required: false })
+  @ApiResponse({ status: 200, description: 'Success', type: GetUsersSuccessResponse })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findAll(
     @Query('pageIndex') pageIndex: number,
     @Query('limit') limit: number,
@@ -85,8 +105,15 @@ export class UsersController {
     }
   }
 
+  // GET ONE USER
   @UseGuards(JwtAuthGuard)
   @Get(':id')
+  @ApiBearerAuth()
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Success', type: GetUserSuccessResponse })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'Not Found' })
   async findOneById(@Param('id') id: ObjectId, @Req() request: Request, @Res() response: Response): Promise<void> {
     try {
       const user = await this.usersService.findOneById(id);
@@ -117,8 +144,14 @@ export class UsersController {
     }
   }
 
+  // UPDATE USER
   @UseGuards(JwtAuthGuard)
   @Put(':id')
+  @ApiBearerAuth()
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Success' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async update(@Param('id') id: ObjectId, @Body() updateUserDto: UpdateUserDto, @Res() response: Response): Promise<void> {
     try {
       const salt = await bcrypt.genSalt();
@@ -141,8 +174,14 @@ export class UsersController {
     }
   }
 
+  // DELETE USER
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
+  @ApiBearerAuth()
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Success' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async remove(@Param('id') id: ObjectId, @Res() response: Response): Promise<void> {
     try {
       const deleteResult = await this.usersService.remove(id);

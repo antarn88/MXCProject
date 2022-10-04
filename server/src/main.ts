@@ -20,8 +20,9 @@ const bootstrap = async (): Promise<void> => {
     .setTitle(process.env.SWAGGER_TITLE)
     .setDescription(process.env.SWAGGER_DESCRIPTION)
     .setVersion(process.env.SWAGGER_VERSION)
-    .addTag('auth')
-    .addTag('users')
+    .addTag('Auth')
+    .addTag('Users')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
