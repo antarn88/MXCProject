@@ -5,6 +5,7 @@ import * as dotenv from 'dotenv';
 import { AppController } from './app.controller';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ProductsModule } from './products/products.module';
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ dotenv.config();
     ),
     UsersModule,
     AuthModule,
+    ProductsModule,
   ],
   controllers: [AppController],
 })

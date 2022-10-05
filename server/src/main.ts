@@ -22,6 +22,7 @@ const bootstrap = async (): Promise<void> => {
     .setVersion(process.env.SWAGGER_VERSION)
     .addTag('Auth')
     .addTag('Users')
+    .addTag('Products')
     .addBearerAuth()
     .build();
 
