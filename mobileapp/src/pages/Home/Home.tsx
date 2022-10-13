@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Text, StyleSheet, View} from 'react-native';
+import {Text, StyleSheet, View, ActivityIndicator} from 'react-native';
 import {Table, Row, Rows} from 'react-native-table-component';
 
 import {IProductsState} from '../../interfaces/products/products-state.interface';
@@ -7,7 +7,7 @@ import {getProducts} from '../../store/products/products-api';
 import store, {useAppSelector, RootState} from '../../store/store';
 
 const Home = (): JSX.Element => {
-  const {products} = useAppSelector<IProductsState>((state: RootState) => state.products);
+  const {products, isLoading} = useAppSelector<IProductsState>((state: RootState) => state.products);
 
   const fetchProducts = async (): Promise<void> => {
     await store.dispatch(getProducts());
@@ -17,12 +17,26 @@ const Home = (): JSX.Element => {
     fetchProducts();
   }, []);
 
-  const tableHead = ['productName', 'productNum', 'price', 'createdAt'];
+  const tableHead = ['Terméknév', 'Cikkszám', 'Ár', 'CreatedAt'];
   const tableData = products.map((row) => [row.productName, row.productNumber, row.price, row.createdAt]);
 
   return (
     <View>
-      {products.length > 0 && (
+      {isLoading && (
+        <View style={styles.mainContainer}>
+          <Text style={styles.loadingBox}>
+            <Text>
+              <ActivityIndicator size="large" style={styles.spinner} />
+            </Text>
+            <Text style={styles.loadingText}>
+              <Text>Termékek betöltése...</Text>
+            </Text>
+          </Text>
+        </View>
+      )}
+      {!isLoading && products.length === 0 && <Text>Nincsenek termékek.</Text>}
+
+      {products.length > 0 && !isLoading && (
         <View>
           <Text style={styles.titleText}>Termék lista:</Text>
           <Table borderStyle={{borderWidth: 2, borderColor: '#c8e1ff'}}>
@@ -36,6 +50,24 @@ const Home = (): JSX.Element => {
 };
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    marginTop: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingBox: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 20,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  spinner: {
+    marginRight: 20,
+  },
   baseText: {
     fontFamily: 'Cochin',
     fontSize: 15,
