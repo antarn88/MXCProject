@@ -19,7 +19,7 @@
     "react-jwt": "^1.1.7",
     "react-native": "0.70.2",
     "react-native-dotenv": "^3.3.1",
-    "react-native-table-component": "^1.2.2",
+    "react-native-table-component": "sturmenta/react-native-table-component#e1582aaba92b7e070c31c98b116eea9c23e17f6d",
     "react-redux": "^8.0.4",
     "react-router-dom": "^6.4.2",
     "redux-thunk": "^2.4.1"

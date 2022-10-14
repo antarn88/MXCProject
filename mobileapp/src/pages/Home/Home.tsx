@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import {Text, StyleSheet, View, ActivityIndicator} from 'react-native';
 import {Table, Row, Rows} from 'react-native-table-component';
+import {IProduct} from '../../interfaces/products/product.interface';
 
 import {IProductsState} from '../../interfaces/products/products-state.interface';
 import {getProducts} from '../../store/products/products-api';
@@ -17,8 +18,16 @@ const Home = (): JSX.Element => {
     fetchProducts();
   }, []);
 
+  const priceFormatter = new Intl.NumberFormat('hu-HU', {style: 'currency', currency: 'HUF', maximumSignificantDigits: 1});
+  const dateFormatter = (isoDate: string) => new Date(isoDate).toLocaleDateString('hu-HU');
+
   const tableHead = ['Terméknév', 'Cikkszám', 'Ár', 'CreatedAt'];
-  const tableData = products.map((row) => [row.productName, row.productNumber, row.price, row.createdAt]);
+  const tableData = products.map((row: IProduct) => [
+    row.productName,
+    row.productNumber,
+    priceFormatter.format(row.price),
+    dateFormatter(row.createdAt!),
+  ]);
 
   return (
     <View>
