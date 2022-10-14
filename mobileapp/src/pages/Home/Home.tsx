@@ -23,15 +23,9 @@ const Home = (): JSX.Element => {
   return (
     <View>
       {isLoading && (
-        <View style={styles.mainContainer}>
-          <Text style={styles.loadingBox}>
-            <Text>
-              <ActivityIndicator size="large" style={styles.spinner} />
-            </Text>
-            <Text style={styles.loadingText}>
-              <Text>Termékek betöltése...</Text>
-            </Text>
-          </Text>
+        <View style={styles.loadingBox}>
+          <ActivityIndicator size="large" />
+          <Text style={styles.loadingText}>Termékek betöltése...</Text>
         </View>
       )}
       {!isLoading && products.length === 0 && <Text>Nincsenek termékek.</Text>}
@@ -50,23 +44,13 @@ const Home = (): JSX.Element => {
 };
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    marginTop: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   loadingBox: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginTop: 35,
   },
   loadingText: {
-    fontSize: 20,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  spinner: {
-    marginRight: 20,
+    alignSelf: 'center',
+    marginTop: 10,
+    fontSize: 18,
   },
   baseText: {
     fontFamily: 'Cochin',
