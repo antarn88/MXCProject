@@ -11,7 +11,7 @@ const Header = (): JSX.Element => {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    backgroundColor: 'lightgreen',
+    backgroundColor: '#F5F5F5',
     fontWeight: 'bold',
     height: 80,
   },

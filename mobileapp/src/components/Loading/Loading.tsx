@@ -5,21 +5,23 @@ import {ILoadingProps} from '../../interfaces/loading/loading-props.interface';
 
 const Loading = ({loadingText}: ILoadingProps): JSX.Element => {
   return (
-    <View style={styles.loadingBox}>
-      <ActivityIndicator size="large" />
+    <View>
+      <ActivityIndicator size="large" style={styles.spinner} />
       <Text style={styles.loadingText}>{loadingText}</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  loadingBox: {
-    marginTop: 13,
-  },
   loadingText: {
-    alignSelf: 'center',
-    marginTop: 10,
-    fontSize: 18,
+    fontSize: 16,
+    marginLeft: 132,
+    marginBottom: 15,
+  },
+  spinner: {
+    marginLeft: 190,
+    padding: 15,
+    width: 30,
   },
 });
 
