@@ -1,7 +1,8 @@
 import React from 'react';
-import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
+import {ActivityIndicator, Text, View} from 'react-native';
 
 import {ILoadingProps} from '../../interfaces/loading/loading-props.interface';
+import {styles} from './Loading.styles';
 
 const Loading = ({loadingText}: ILoadingProps): JSX.Element => {
   return (
@@ -11,18 +12,5 @@ const Loading = ({loadingText}: ILoadingProps): JSX.Element => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  loadingText: {
-    fontSize: 16,
-    marginLeft: 132,
-    marginBottom: 15,
-  },
-  spinner: {
-    marginLeft: 190,
-    padding: 15,
-    width: 30,
-  },
-});
 
 export default Loading;
