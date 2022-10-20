@@ -11,7 +11,7 @@ const store = configureStore({
   reducer: {
     products: productsSlice.reducer,
   },
-  middleware: getDefaultMiddleware => getDefaultMiddleware().concat(...middlewares),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(...middlewares),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

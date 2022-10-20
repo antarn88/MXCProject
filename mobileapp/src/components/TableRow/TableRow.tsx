@@ -6,21 +6,30 @@ import {styles} from './TableRow.styles';
 
 export const TableRow = ({item}) => {
   return (
-    <View style={styles.renderItemContainer}>
-      <View style={{borderRightWidth: 1, width: 147, padding: 10, borderColor: '#DCDCDC'}}>
+    <View style={styles.tableContentContainer}>
+      {/* PRODUCT NAME */}
+      <View style={[styles.rowCell, styles.productNameCell]}>
         <Text>{item.productName}</Text>
       </View>
-      <View style={{borderRightWidth: 1, width: 83, padding: 10, borderColor: '#DCDCDC'}}>
-        <Text style={{alignSelf: 'center'}}>{item.productNumber}</Text>
+
+      {/* PRODUCT NUMBER */}
+      <View style={[styles.rowCell, styles.productNumberCell]}>
+        <Text style={styles.alignSelfCenter}>{item.productNumber}</Text>
       </View>
-      <View style={{borderRightWidth: 1, width: 70, padding: 10, borderColor: '#DCDCDC'}}>
-        <Text style={{alignSelf: 'center'}}>{item.price}</Text>
+
+      {/* PRICE */}
+      <View style={[styles.rowCell, styles.priceCell]}>
+        <Text style={styles.alignSelfCenter}>{item.price}</Text>
       </View>
-      <View style={{borderRightWidth: 1, width: 110, padding: 10, borderColor: '#DCDCDC'}}>
-        <Text>{dateFormatter(item.createdAt!)}</Text>
+
+      {/* CREATED AT */}
+      <View style={[styles.rowCell, styles.createdAtCell]}>
+        <Text style={styles.alignSelfCenter}>{dateFormatter(item.createdAt!)}</Text>
       </View>
-      <View style={{borderRightWidth: 1, width: 90, padding: 10, borderColor: '#DCDCDC'}}>
-        <Text style={{alignSelf: 'center'}}>
+
+      {/* DELETE */}
+      <View style={[styles.rowCell, styles.deleteCell]}>
+        <Text style={styles.alignSelfCenter}>
           <Button title="Törlés" color="#B22222" />
         </Text>
       </View>

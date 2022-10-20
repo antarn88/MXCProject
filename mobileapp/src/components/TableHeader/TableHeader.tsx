@@ -6,20 +6,29 @@ import {styles} from './TableHeader.styles';
 export const TableHeader = (): JSX.Element => {
   return (
     <View style={styles.headerContainer}>
-      <View style={{borderRightWidth: 1, width: 147, padding: 10, borderColor: '#DCDCDC'}}>
-        <Text style={{alignSelf: 'center'}}>Terméknév</Text>
+      {/* PRODUCT NAME */}
+      <View style={[styles.headerCell, styles.productNameCell]}>
+        <Text style={styles.alignSelfCenter}>Terméknév</Text>
       </View>
-      <View style={{borderRightWidth: 1, width: 83, padding: 10, borderColor: '#DCDCDC'}}>
-        <Text style={{alignSelf: 'center'}}>Cikkszám</Text>
+
+      {/* PRODUCT NUMBER */}
+      <View style={[styles.headerCell, styles.productNumberCell]}>
+        <Text style={styles.alignSelfCenter}>Cikkszám</Text>
       </View>
-      <View style={{borderRightWidth: 1, width: 70, padding: 10, borderColor: '#DCDCDC'}}>
-        <Text style={{alignSelf: 'center'}}>Ár</Text>
+
+      {/* PRICE */}
+      <View style={[styles.headerCell, styles.priceCell]}>
+        <Text style={styles.alignSelfCenter}>Ár</Text>
       </View>
-      <View style={{borderRightWidth: 1, width: 110, padding: 10, borderColor: '#DCDCDC'}}>
-        <Text style={{alignSelf: 'center'}}>CreatedAt</Text>
+
+      {/* CREATED AT */}
+      <View style={[styles.headerCell, styles.createdAtCell]}>
+        <Text style={styles.alignSelfCenter}>CreatedAt</Text>
       </View>
-      <View style={{borderRightWidth: 1, width: 90, padding: 10, borderColor: '#DCDCDC'}}>
-        <Text style={{alignSelf: 'center'}}>Törlés</Text>
+
+      {/* DELETE  */}
+      <View style={[styles.headerCell, styles.deleteCell]}>
+        <Text style={styles.alignSelfCenter}>Törlés</Text>
       </View>
     </View>
   );
