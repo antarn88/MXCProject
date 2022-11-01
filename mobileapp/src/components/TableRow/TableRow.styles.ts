@@ -31,4 +31,7 @@ export const styles = StyleSheet.create({
   deleteCell: {
     width: 90,
   },
+  clickProduct: {
+    backgroundColor: 'white',
+  },
 });

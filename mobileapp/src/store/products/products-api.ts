@@ -12,7 +12,7 @@ export const getProducts = createAsyncThunk('products/getProducts', async (pageO
   const limit = pageOptions.limit;
 
   const response = await axios.get(`${API_URL}/products?orderBy=${orderBy}&order=${order}&pageIndex=${pageIndex}&limit=${limit}`);
-  // await sleep(1500);
+  // await sleep(500);
   return response.data.content.results as IProduct[];
 });
 

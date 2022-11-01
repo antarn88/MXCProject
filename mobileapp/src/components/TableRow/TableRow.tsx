@@ -1,15 +1,22 @@
 import React from 'react';
 import {View, Text, Button} from 'react-native';
+import {Link} from 'react-router-native';
 
 import {dateFormatter} from '../../utils/Utils';
 import {styles} from './TableRow.styles';
 
 export const TableRow = ({item}) => {
+  let clickProduct = false;
+
   return (
     <View style={styles.tableContentContainer}>
       {/* PRODUCT NAME */}
-      <View style={[styles.rowCell, styles.productNameCell]}>
-        <Text>{item.productName}</Text>
+      <View style={[styles.rowCell, styles.productNameCell, clickProduct ? styles.clickProduct : undefined]}>
+        <Link to={`/${item.id}`} state={item}>
+          <Text onPressIn={() => (clickProduct = true)} onPressOut={() => (clickProduct = false)}>
+            {item.productName}{' '}
+          </Text>
+        </Link>
       </View>
 
       {/* PRODUCT NUMBER */}
