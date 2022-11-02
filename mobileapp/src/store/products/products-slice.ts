@@ -2,7 +2,7 @@ import {createSlice, ActionReducerMapBuilder} from '@reduxjs/toolkit';
 
 import {IProduct} from '../../interfaces/products/product.interface';
 import {IProductsState} from '../../interfaces/products/products-state.interface';
-import {getProducts} from './products-api';
+import {getProducts, updateProduct} from './products-api';
 
 const initialState: IProductsState = {
   product: null,
@@ -33,6 +33,19 @@ const productsSlice = createSlice({
     builder.addCase(getProducts.rejected, (state: IProductsState, action) => {
       state.isLoading = false;
       state.error.errorAtGetProducts = action.error;
+    });
+
+    // UPDATE PRODUCT
+    builder.addCase(updateProduct.pending, (state: IProductsState) => {
+      state.isLoading = true;
+      state.error.errorAtUpdateProduct = null;
+    });
+    builder.addCase(updateProduct.fulfilled, (state: IProductsState) => {
+      state.isLoading = false;
+    });
+    builder.addCase(updateProduct.rejected, (state: IProductsState, action) => {
+      state.isLoading = false;
+      state.error.errorAtUpdateProduct = action.error;
     });
   },
 });

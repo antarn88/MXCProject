@@ -16,4 +16,9 @@ export const getProducts = createAsyncThunk('products/getProducts', async (pageO
   return response.data.content.results as IProduct[];
 });
 
+export const updateProduct = createAsyncThunk('products/updateProduct', async (product: IProduct) => {
+  const response = await axios.put(`${API_URL}/products/${product.id}`, product);
+  return response.data;
+});
+
 // const sleep = (time: number): Promise<void> => new Promise<void>((resolve) => setTimeout(resolve, time));

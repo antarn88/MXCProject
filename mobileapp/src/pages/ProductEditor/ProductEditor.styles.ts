@@ -2,7 +2,7 @@ import {StyleSheet} from 'react-native';
 
 export const styles = StyleSheet.create({
   formContainer: {
-    marginTop: 50,
+    marginTop: 30,
   },
   label: {
     marginHorizontal: 20,
@@ -24,5 +24,13 @@ export const styles = StyleSheet.create({
     padding: 10,
     alignContent: 'space-around',
     justifyContent: 'center',
+    marginTop: 10,
+  },
+  container: {
+    marginTop: 20,
+  },
+  editorTitle: {
+    fontSize: 30,
+    textAlign: 'center',
   },
 });

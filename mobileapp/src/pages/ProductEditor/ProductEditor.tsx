@@ -6,6 +6,8 @@ import {styles} from './ProductEditor.styles';
 import {useController, useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {z} from 'zod';
+import store from '../../store/store';
+import {updateProduct} from '../../store/products/products-api';
 // import {useLocation} from 'react-router-native';
 
 const ProductEditor = (): JSX.Element => {
@@ -61,36 +63,48 @@ const ProductEditor = (): JSX.Element => {
   //   console.log('getValues:', getValues());
   // }, [getValues, product.productName, setValue]);
 
-  const onSubmit = (data) => {
-    const modifiedData = {
-      ...data,
-      productNumber: parseInt(data.productNumber, 10),
-      price: parseInt(data.price, 10),
+  const onSubmit = async (updatedProduct): Promise<void> => {
+    const modifiedProduct = {
+      ...updatedProduct,
+      productNumber: parseInt(updatedProduct.productNumber.toString(), 10),
+      price: parseInt(updatedProduct.price.toString(), 10),
       id: product.id,
     };
-    console.log('save, data:', modifiedData);
+
+    if (updatedProduct) {
+      if ((await store.dispatch(updateProduct(modifiedProduct))).meta.requestStatus === 'fulfilled') {
+        console.log('Termék mentése sikeres.');
+        nav(-1);
+      } else {
+        console.log('Termék mentése NEM sikerült!');
+      }
+    }
   };
 
   return (
-    <View style={[styles.formContainer]}>
-      <View>
-        <Text style={[styles.label]}>Terméknév *</Text>
-        <Input name="productName" inputControl={control} value={product.productName} keyboardType={'default'} />
-      </View>
+    <View style={[styles.container]}>
+      <Text style={[styles.editorTitle]}>Termék szerkesztő</Text>
 
-      <View>
-        <Text style={[styles.label]}>Cikkszám *</Text>
-        <Input name="productNumber" inputControl={control} value={product.productNumber} keyboardType={'number-pad'} />
-      </View>
+      <View style={[styles.formContainer]}>
+        <View>
+          <Text style={[styles.label]}>Terméknév *</Text>
+          <Input name="productName" inputControl={control} value={product.productName} keyboardType={'default'} />
+        </View>
 
-      <View>
-        <Text style={[styles.label]}>Ár *</Text>
-        <Input name="price" inputControl={control} value={product.price} keyboardType={'number-pad'} />
-      </View>
+        <View>
+          <Text style={[styles.label]}>Cikkszám *</Text>
+          <Input name="productNumber" inputControl={control} value={product.productNumber} keyboardType={'number-pad'} />
+        </View>
 
-      <View style={styles.buttonContainer}>
-        <Button title="Vissza" onPress={() => nav(-1)} color={'gray'} />
-        <Button title="Mentés" onPress={handleSubmit(onSubmit)} />
+        <View>
+          <Text style={[styles.label]}>Ár *</Text>
+          <Input name="price" inputControl={control} value={product.price} keyboardType={'number-pad'} />
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <Button title="Vissza" onPress={() => nav(-1)} color={'gray'} />
+          <Button title="Mentés" onPress={handleSubmit(onSubmit)} />
+        </View>
       </View>
     </View>
   );
