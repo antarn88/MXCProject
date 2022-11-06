@@ -2,7 +2,7 @@ import {createSlice, ActionReducerMapBuilder} from '@reduxjs/toolkit';
 
 import {IProduct} from '../../interfaces/products/product.interface';
 import {IProductsState} from '../../interfaces/products/products-state.interface';
-import {getProducts, updateProduct} from './products-api';
+import {createProduct, deleteProduct, getProducts, updateProduct} from './products-api';
 
 const initialState: IProductsState = {
   product: null,
@@ -46,6 +46,32 @@ const productsSlice = createSlice({
     builder.addCase(updateProduct.rejected, (state: IProductsState, action) => {
       state.isLoading = false;
       state.error.errorAtUpdateProduct = action.error;
+    });
+
+    // CREATE PRODUCT
+    builder.addCase(createProduct.pending, (state: IProductsState) => {
+      state.isLoading = true;
+      state.error.errorAtCreateProduct = null;
+    });
+    builder.addCase(createProduct.fulfilled, (state: IProductsState) => {
+      state.isLoading = false;
+    });
+    builder.addCase(createProduct.rejected, (state: IProductsState, action) => {
+      state.isLoading = false;
+      state.error.errorAtCreateProduct = action.error;
+    });
+
+    // DELETE PRODUCT
+    builder.addCase(deleteProduct.pending, (state: IProductsState) => {
+      state.isLoading = true;
+      state.error.errorAtDeleteProduct = null;
+    });
+    builder.addCase(deleteProduct.fulfilled, (state: IProductsState) => {
+      state.isLoading = false;
+    });
+    builder.addCase(deleteProduct.rejected, (state: IProductsState, action) => {
+      state.isLoading = false;
+      state.error.errorAtDeleteProduct = action.error;
     });
   },
 });

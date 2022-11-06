@@ -21,4 +21,14 @@ export const updateProduct = createAsyncThunk('products/updateProduct', async (p
   return response.data;
 });
 
+export const createProduct = createAsyncThunk('products/createProduct', async (product: IProduct) => {
+  const response = await axios.post(`${API_URL}/products`, product);
+  return response.data.content;
+});
+
+export const deleteProduct = createAsyncThunk('products/deleteProduct', async (id: string) => {
+  const response = await axios.delete(`${API_URL}/products/${id}`);
+  return response.data;
+});
+
 // const sleep = (time: number): Promise<void> => new Promise<void>((resolve) => setTimeout(resolve, time));

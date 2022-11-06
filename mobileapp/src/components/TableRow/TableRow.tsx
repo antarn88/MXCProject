@@ -1,11 +1,11 @@
 import React from 'react';
-import {View, Text, Button} from 'react-native';
+import {View, Text, Button, GestureResponderEvent} from 'react-native';
 import {Link} from 'react-router-native';
 
 import {dateFormatter} from '../../utils/Utils';
 import {styles} from './TableRow.styles';
 
-export const TableRow = ({item}) => {
+export const TableRow = ({item}, handleDeleteClick: (event: GestureResponderEvent) => void) => {
   let clickProduct = false;
 
   return (
@@ -37,7 +37,7 @@ export const TableRow = ({item}) => {
       {/* DELETE */}
       <View style={[styles.rowCell, styles.deleteCell]}>
         <Text style={styles.alignSelfCenter}>
-          <Button title="Törlés" color="#B22222" />
+          <Button title="Törlés" color="#B22222" onPress={handleDeleteClick} />
         </Text>
       </View>
     </View>
