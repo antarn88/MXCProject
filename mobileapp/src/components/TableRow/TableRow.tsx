@@ -5,7 +5,7 @@ import {Link} from 'react-router-native';
 import {dateFormatter} from '../../utils/Utils';
 import {styles} from './TableRow.styles';
 
-export const TableRow = ({item}, handleDeleteClick: (event: GestureResponderEvent) => void) => {
+export const TableRow = ({item}, handleDeleteClick: (event: GestureResponderEvent, id: string) => void) => {
   let clickProduct = false;
 
   return (
@@ -37,7 +37,7 @@ export const TableRow = ({item}, handleDeleteClick: (event: GestureResponderEven
       {/* DELETE */}
       <View style={[styles.rowCell, styles.deleteCell]}>
         <Text style={styles.alignSelfCenter}>
-          <Button title="Törlés" color="#B22222" onPress={handleDeleteClick} />
+          <Button title="Törlés" color="#B22222" onPress={(event: GestureResponderEvent) => handleDeleteClick(event, item.id)} />
         </Text>
       </View>
     </View>

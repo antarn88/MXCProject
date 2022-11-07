@@ -1,10 +1,10 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {View, FlatList, ScrollView, Text, Button, ListRenderItemInfo} from 'react-native';
+import {View, FlatList, ScrollView, Text, Button, ListRenderItemInfo, GestureResponderEvent} from 'react-native';
 import {useNavigate} from 'react-router-native';
 
 import {IProduct} from '../../interfaces/products/product.interface';
 import {IProductsState} from '../../interfaces/products/products-state.interface';
-import {getProducts} from '../../store/products/products-api';
+import {deleteProduct, getProducts} from '../../store/products/products-api';
 import store, {useAppSelector, RootState} from '../../store/store';
 import {OrderByOption} from '../../enums/order-by-option.enum';
 import {OrderOption} from '../../enums/order-option.enum';
@@ -56,8 +56,13 @@ const Home = (): JSX.Element => {
   const onPressCreateProduct = (): void => navigate('/create');
 
   // TODO befejezni
-  const onDeleteProduct = (): void => {
-    console.log('Delete product...');
+  const onDeleteProduct = async (_event: GestureResponderEvent, productId: string): Promise<void> => {
+    if ((await store.dispatch(deleteProduct(productId))).meta.requestStatus === 'fulfilled') {
+      setDisplayedProducts(displayedProducts.filter((product: IProduct) => product.id?.toString() !== productId));
+      console.log('Sikeres törlés!');
+    } else {
+      console.log('TÖRLÉS NEM SIKERÜLT!');
+    }
   };
 
   return (
