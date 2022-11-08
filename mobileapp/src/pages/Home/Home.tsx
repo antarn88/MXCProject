@@ -1,5 +1,16 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {View, FlatList, ScrollView, Text, Button, ListRenderItemInfo, GestureResponderEvent} from 'react-native';
+import {
+  View,
+  FlatList,
+  ScrollView,
+  Text,
+  Button,
+  ListRenderItemInfo,
+  GestureResponderEvent,
+  Modal,
+  Pressable,
+  StyleSheet,
+} from 'react-native';
 import {useNavigate} from 'react-router-native';
 
 import {IProduct} from '../../interfaces/products/product.interface';
@@ -19,6 +30,7 @@ const Home = (): JSX.Element => {
   const [pageIndex, setPageIndex] = useState<number>(0);
   const [orderBy, setOrderBy] = useState<OrderByOption>(OrderByOption.PRODUCT_NAME);
   const [order, setOrder] = useState<OrderOption>(OrderOption.ASC);
+  const [currentProductId, setCurrentProductId] = useState<string | null>(null);
   const navigate = useNavigate();
   const pageSize = 10;
 
@@ -55,18 +67,95 @@ const Home = (): JSX.Element => {
 
   const onPressCreateProduct = (): void => navigate('/create');
 
-  // TODO befejezni
   const onDeleteProduct = async (_event: GestureResponderEvent, productId: string): Promise<void> => {
-    if ((await store.dispatch(deleteProduct(productId))).meta.requestStatus === 'fulfilled') {
-      setDisplayedProducts(displayedProducts.filter((product: IProduct) => product.id?.toString() !== productId));
-      console.log('Sikeres törlés!');
-    } else {
-      console.log('TÖRLÉS NEM SIKERÜLT!');
+    setCurrentProductId(productId);
+    setModalVisible(true);
+  };
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const styless = StyleSheet.create({
+    centeredView: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modalView: {
+      margin: 20,
+      backgroundColor: 'white',
+      borderRadius: 20,
+      padding: 35,
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    button: {
+      borderRadius: 20,
+      padding: 10,
+      elevation: 2,
+    },
+    buttonOpen: {
+      backgroundColor: '#F194FF',
+    },
+    buttonClose: {
+      backgroundColor: '#2196F3',
+    },
+    textStyle: {
+      color: 'white',
+      fontWeight: 'bold',
+      textAlign: 'center',
+    },
+    modalText: {
+      marginBottom: 15,
+      textAlign: 'center',
+    },
+  });
+
+  const confirmedDelete = async (): Promise<void> => {
+    setModalVisible(false);
+    if (currentProductId) {
+      if ((await store.dispatch(deleteProduct(currentProductId))).meta.requestStatus === 'fulfilled') {
+        setDisplayedProducts(displayedProducts.filter((product: IProduct) => product.id?.toString() !== currentProductId));
+      } else {
+        console.log('TÖRLÉS NEM SIKERÜLT!');
+      }
+      setCurrentProductId(null);
     }
   };
 
   return (
-    <View>
+    <View style={[styles.mainContainer]}>
+      {/* MODAL */}
+      <View style={styless.centeredView}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}>
+          <View style={styless.centeredView}>
+            <View style={styless.modalView}>
+              <Text style={styless.modalText}>Biztosan törlöd a terméket?</Text>
+
+              <Pressable style={[styless.button, styless.buttonClose]} onPress={() => setModalVisible(false)}>
+                <Text style={styless.textStyle}>Mégse</Text>
+              </Pressable>
+
+              <Pressable style={[styless.button, styless.buttonClose]} onPress={confirmedDelete}>
+                <Text style={styless.textStyle}>Igen</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+      </View>
+
       <View style={[styles.newProductContainer]}>
         <Button onPress={onPressCreateProduct} title="Új termék" />
       </View>
