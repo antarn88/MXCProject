@@ -1,18 +1,17 @@
-import React from 'react';
-import {Button, Text, TextInput, View} from 'react-native';
+import React, {useCallback} from 'react';
+import {Button, Text, TextInput, ToastAndroid, View} from 'react-native';
 import {useLocation, useNavigate} from 'react-router-native';
-import {useController, useForm} from 'react-hook-form';
+import {FieldValues, useController, useForm} from 'react-hook-form';
 
 import {styles} from './ProductEditor.styles';
 import {IProduct} from '../../interfaces/products/product.interface';
-import store from '../../store/store';
 import {createProduct, updateProduct} from '../../store/products/products-api';
+import store from '../../store/store';
 
 const ProductEditor = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
-  const product = location.state as IProduct;
-
+  const product = location.state?.product as IProduct;
   const {control, handleSubmit} = useForm();
 
   const Input = ({name, inputControl, value, keyboardType}) => {
@@ -31,38 +30,44 @@ const ProductEditor = (): JSX.Element => {
     );
   };
 
-  const onSubmit = async (updatedProduct): Promise<void> => {
-    let modifiedProduct: IProduct;
+  const backToProductList = useCallback((): void => navigate(-1), [navigate]);
 
-    if (product?.id) {
-      modifiedProduct = {
-        ...updatedProduct,
-        productNumber: parseInt(updatedProduct.productNumber.toString(), 10),
-        price: parseInt(updatedProduct.price.toString(), 10),
-        id: product.id,
-      } as IProduct;
+  const onSubmit = useCallback(
+    async (fieldValues: FieldValues): Promise<void> => {
+      console.log('updatedProduct:', fieldValues);
+      let modifiedProduct: IProduct;
 
-      if ((await store.dispatch(updateProduct(modifiedProduct))).meta.requestStatus === 'fulfilled') {
-        console.log('Termék mentése sikeres.');
-        navigate(-1);
+      if (product?.id) {
+        modifiedProduct = {
+          ...fieldValues,
+          productNumber: parseInt(fieldValues.productNumber.toString(), 10),
+          price: parseInt(fieldValues.price.toString(), 10),
+          id: product.id,
+        } as IProduct;
+
+        if ((await store.dispatch(updateProduct(modifiedProduct))).meta.requestStatus === 'fulfilled') {
+          backToProductList();
+          ToastAndroid.show('Termék frissítése sikeres', ToastAndroid.LONG);
+        } else {
+          ToastAndroid.show('Hiba a termék frissítésekor', ToastAndroid.LONG);
+        }
       } else {
-        console.log('Termék mentése NEM sikerült!');
-      }
-    } else {
-      modifiedProduct = {
-        ...updatedProduct,
-        productNumber: parseInt(updatedProduct.productNumber.toString(), 10),
-        price: parseInt(updatedProduct.price.toString(), 10),
-      } as IProduct;
+        modifiedProduct = {
+          ...fieldValues,
+          productNumber: parseInt(fieldValues.productNumber.toString(), 10),
+          price: parseInt(fieldValues.price.toString(), 10),
+        } as IProduct;
 
-      if ((await store.dispatch(createProduct(modifiedProduct))).meta.requestStatus === 'fulfilled') {
-        console.log('Termék létrehozása sikeres.');
-        navigate(-1);
-      } else {
-        console.log('Termék létrehozása NEM sikerült!');
+        if ((await store.dispatch(createProduct(modifiedProduct))).meta.requestStatus === 'fulfilled') {
+          backToProductList();
+          ToastAndroid.show('Termék létrehozása sikeres', ToastAndroid.LONG);
+        } else {
+          ToastAndroid.show('Hiba a termék létrehozásakor', ToastAndroid.LONG);
+        }
       }
-    }
-  };
+    },
+    [backToProductList, product],
+  );
 
   return (
     <View style={[styles.container]}>
@@ -85,8 +90,8 @@ const ProductEditor = (): JSX.Element => {
         </View>
 
         <View style={styles.buttonContainer}>
-          <Button title="Vissza" onPress={() => navigate(-1)} color={'gray'} />
-          <Button title="Mentés" onPress={handleSubmit(onSubmit)} />
+          <Button title="Vissza" onPress={backToProductList} color={'gray'} />
+          <Button title="Mentés" onPress={handleSubmit((fieldValues: FieldValues) => onSubmit(fieldValues))} />
         </View>
       </View>
     </View>

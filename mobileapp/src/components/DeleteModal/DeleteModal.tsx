@@ -1,5 +1,5 @@
 import React from 'react';
-import {Modal, Pressable, Text, View} from 'react-native';
+import {ActivityIndicator, Modal, Pressable, Text, View} from 'react-native';
 
 import {styles} from './DeleteModal.styles';
 
@@ -15,15 +15,30 @@ const DeleteModal = ({modalVisible, setModalVisible, onDeleteProduct, isDeleting
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Biztosan törlöd a terméket?</Text>
+            <Text style={styles.modalText}>Biztosan törli a terméket?</Text>
 
-            <Pressable style={[styles.button, styles.buttonClose]} onPress={() => setModalVisible(false)}>
-              <Text style={styles.textStyle}>Mégse</Text>
-            </Pressable>
+            <View style={{flexDirection: 'row', minWidth: '80%', justifyContent: 'space-evenly'}}>
+              <Pressable
+                style={[styles.button, styles.buttonClose, styles.cancelButton]}
+                onPress={() => setModalVisible(false)}
+                disabled={isDeletingProduct}>
+                <Text style={styles.textStyle}>Mégse</Text>
+              </Pressable>
 
-            <Pressable style={[styles.button, styles.buttonClose]} onPress={onDeleteProduct}>
-              {!isDeletingProduct ? <Text style={styles.textStyle}>Igen</Text> : <Text style={styles.textStyle}>Törlés...</Text>}
-            </Pressable>
+              <Pressable
+                style={[styles.button, styles.buttonClose, styles.confirmButton]}
+                onPress={onDeleteProduct}
+                disabled={isDeletingProduct}>
+                {!isDeletingProduct ? (
+                  <Text style={styles.textStyle}>Igen</Text>
+                ) : (
+                  <View style={[styles.loadingBox]}>
+                    <ActivityIndicator size="small" color="white" />
+                    <Text style={[styles.loadingText]}>Törlés...</Text>
+                  </View>
+                )}
+              </Pressable>
+            </View>
           </View>
         </View>
       </Modal>

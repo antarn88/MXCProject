@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {View, FlatList, ScrollView, Text, Button, ListRenderItemInfo, GestureResponderEvent} from 'react-native';
+import {View, FlatList, ScrollView, Text, Button, ListRenderItemInfo, GestureResponderEvent, ToastAndroid} from 'react-native';
 import {useNavigate} from 'react-router-native';
 
 import {IProduct} from '../../interfaces/products/product.interface';
@@ -26,7 +26,7 @@ const Home = (): JSX.Element => {
   const navigate = useNavigate();
   const pageSize = 10;
 
-  const fetchProducts = async (): Promise<void> => {
+  const fetchProducts = useCallback(async (): Promise<void> => {
     console.log('FETCH MEGHÍVÓDOTT, az oldal:', pageIndex);
     if (pageIndex !== 0) {
       const request = await store.dispatch(getProducts({pageIndex, limit: pageSize, order, orderBy}));
@@ -38,7 +38,7 @@ const Home = (): JSX.Element => {
         console.log('Hiba a termékek betöltésekor!');
       }
     }
-  };
+  }, [displayedProducts, order, orderBy, pageIndex]);
 
   const reloadTableAfterSorting = useCallback(async (): Promise<void> => {
     setDisplayedProducts([]);
@@ -53,30 +53,36 @@ const Home = (): JSX.Element => {
     }
   }, [order, orderBy]);
 
-  useEffect((): void => {
-    reloadTableAfterSorting();
-  }, [reloadTableAfterSorting]);
+  const onPressCreateProduct = useCallback((): void => navigate('/create'), [navigate]);
 
-  const onPressCreateProduct = (): void => navigate('/create');
-
-  const showDeleteModal = async (_event: GestureResponderEvent, productId: string): Promise<void> => {
+  const showDeleteModal = useCallback((_event: GestureResponderEvent, productId: string): void => {
     setCurrentProductId(productId);
     setModalVisible(true);
-  };
+  }, []);
 
-  const onDeleteProduct = async (): Promise<void> => {
+  const onDeleteProduct = useCallback(async (): Promise<void> => {
     if (currentProductId) {
       setIsDeletingProduct(true);
       if ((await store.dispatch(deleteProduct(currentProductId))).meta.requestStatus === 'fulfilled') {
         setDisplayedProducts(displayedProducts.filter((product: IProduct) => product.id?.toString() !== currentProductId));
+        setModalVisible(false);
+        setIsDeletingProduct(false);
+        setCurrentProductId(null);
+        ToastAndroid.show('Sikeresen törölte a terméket', ToastAndroid.LONG);
       } else {
-        console.log('TÖRLÉS NEM SIKERÜLT!');
+        setModalVisible(false);
+        setIsDeletingProduct(false);
+        setCurrentProductId(null);
+        ToastAndroid.show('Hiba a termék törlésekor', ToastAndroid.LONG);
       }
-      setIsDeletingProduct(false);
-      setCurrentProductId(null);
-      setModalVisible(false);
     }
-  };
+  }, [currentProductId, displayedProducts]);
+
+  const keyExtractor = useCallback((_item: IProduct, index: number) => index.toString(), []);
+
+  useEffect((): void => {
+    reloadTableAfterSorting();
+  }, [reloadTableAfterSorting]);
 
   return (
     <View style={[styles.mainContainer]}>
@@ -103,7 +109,7 @@ const Home = (): JSX.Element => {
             ListHeaderComponent={TableHeader}
             data={displayedProducts}
             renderItem={(item: ListRenderItemInfo<IProduct>) => TableRow(item, showDeleteModal)}
-            keyExtractor={(_item: IProduct, index: number) => index.toString()}
+            keyExtractor={keyExtractor}
             ListFooterComponent={<Loading loadingText={'Termékek betöltése...'} />}
             onEndReached={fetchProducts}
             onEndReachedThreshold={0.9}

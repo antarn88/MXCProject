@@ -12,7 +12,7 @@ export const TableRow = ({item}, handleDeleteClick: (event: GestureResponderEven
     <View style={styles.tableContentContainer}>
       {/* PRODUCT NAME */}
       <View style={[styles.rowCell, styles.productNameCell, clickProduct ? styles.clickProduct : undefined]}>
-        <Link to={`/${item.id}`} state={item}>
+        <Link to={`/${item.id}`} state={{product: item}}>
           <Text onPressIn={() => (clickProduct = true)} onPressOut={() => (clickProduct = false)}>
             {item.productName}{' '}
           </Text>

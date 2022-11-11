@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
   modalView: {
     margin: 20,
     backgroundColor: 'white',
-    borderRadius: 20,
+    borderRadius: 10,
     padding: 35,
     alignItems: 'center',
     shadowColor: '#000',
@@ -22,7 +22,7 @@ export const styles = StyleSheet.create({
     elevation: 5,
   },
   button: {
-    borderRadius: 20,
+    borderRadius: 10,
     padding: 10,
     elevation: 2,
   },
@@ -39,6 +39,26 @@ export const styles = StyleSheet.create({
   },
   modalText: {
     marginBottom: 15,
+    textAlign: 'center',
+    fontSize: 17,
+  },
+  confirmButton: {
+    backgroundColor: '#B22222',
+    color: 'white',
+  },
+  cancelButton: {
+    backgroundColor: 'gray',
+  },
+  loadingText: {
+    color: 'white',
+    marginLeft: 5,
+  },
+  loadingBox: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
     textAlign: 'center',
   },
 });
