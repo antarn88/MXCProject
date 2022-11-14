@@ -1,15 +1,17 @@
 import React, {useCallback} from 'react';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigate} from 'react-router-native';
+import {logout} from '../../utils/auth-utils';
 
 import {styles} from './Header.styles';
 
 const Header = (): JSX.Element => {
+  // const {isLoading, loggedInUser} = useAppSelector<IAuthState>((state: RootState) => state.auth);
   const navigate = useNavigate();
   const email = 'nintendo@lakatos.hu';
 
   const onPressLogo = useCallback((): void => navigate('/'), [navigate]);
-  const onPressLogout = useCallback((): void => console.log('Logging out...'), []);
+  // const onPressLogout = useCallback((): void => console.log('Logging out...'), []);
 
   return (
     <View style={styles.headerContainer}>
@@ -21,7 +23,7 @@ const Header = (): JSX.Element => {
       <View style={[styles.rightSideContainer]}>
         <View style={[styles.labels]}>
           <Text style={[styles.emailLabel]}>{email}</Text>
-          <Text style={[styles.logoutLabel]} onPress={onPressLogout}>
+          <Text style={[styles.logoutLabel]} onPress={logout}>
             Logout
           </Text>
         </View>
