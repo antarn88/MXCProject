@@ -6,13 +6,19 @@ import store from '../store/store';
 import {logout as logoutAsyncThunk, setAuthState} from '../store/auth/auth-api';
 import {IDecodedToken} from '../interfaces/auth/decoded-token.interface';
 import {IProduct} from '../interfaces/products/product.interface';
+import {
+  clearLocalStorage,
+  deleteDataFromLocalStorage,
+  getDataFromLocalStorage,
+  storeDataToLocalStorage,
+} from './local-storage-utils';
 
 // REQUEST WITH AUTH HEADER
-export const requestWithAuthHeader = (options: AxiosRequestConfig): AxiosPromise => {
+export const requestWithAuthHeader = async (options: AxiosRequestConfig): Promise<AxiosPromise> => {
   const client = axios.create({baseURL: API_URL});
   const accessToken = getTokenFromLocalStorage();
-  const decodedToken = decodeToken(accessToken) as IDecodedToken;
-  const isTokenExpired = isExpired(accessToken);
+  const decodedToken = decodeToken(await accessToken) as IDecodedToken;
+  const isTokenExpired = isExpired(await accessToken);
 
   if (accessToken && decodedToken && !isTokenExpired) {
     client.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
@@ -24,7 +30,7 @@ export const requestWithAuthHeader = (options: AxiosRequestConfig): AxiosPromise
   client.interceptors.response.use(
     async (response: AxiosResponse): Promise<AxiosResponse> => {
       const {isLoggedIn} = store.getState().auth;
-      if (!isLoggedIn && hasToken()) {
+      if (!isLoggedIn && (await hasToken())) {
         setAuthStateFromToken();
       }
       return response;
@@ -41,22 +47,20 @@ export const requestWithAuthHeader = (options: AxiosRequestConfig): AxiosPromise
 
 // LOGOUT
 export const logout = async (): Promise<void> => {
-  removeTokenFromLocalStorage();
+  await removeTokenFromLocalStorage();
   await store.dispatch(logoutAsyncThunk());
-  goToLoginPage();
 };
 
-export const setTokenToLocalStorage = (accessToken: string): void =>
-  accessToken ? localStorage.setItem('accessToken', accessToken) : undefined;
+export const setTokenToLocalStorage = async (accessToken: string): Promise<void> =>
+  accessToken ? await storeDataToLocalStorage('accessToken', accessToken) : undefined;
 
-export const removeTokenFromLocalStorage = (): void => localStorage.removeItem('accessToken');
-export const getTokenFromLocalStorage = (): string => localStorage.getItem('accessToken') || '';
-export const hasToken = (): boolean => (localStorage.getItem('accessToken') ? true : false);
-export const goToLoginPage = (): string => (window.location.href = '/login');
+export const removeTokenFromLocalStorage = async (): Promise<void> => await deleteDataFromLocalStorage('accessToken');
+export const getTokenFromLocalStorage = async (): Promise<string> => (await getDataFromLocalStorage('accessToken')) || '';
+export const hasToken = async (): Promise<boolean> => ((await getDataFromLocalStorage('accessToken')) ? true : false);
 
 export const setAuthStateFromToken = (): void => {
   (async (): Promise<void> => {
-    const accessToken = getTokenFromLocalStorage();
+    const accessToken = await getTokenFromLocalStorage();
     const decodedToken = decodeToken(accessToken) as IDecodedToken;
     const userId = decodedToken.sub;
     const response = await axios.get(`${API_URL}/users/${userId}`, {

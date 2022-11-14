@@ -36,11 +36,18 @@ const authSlice = createSlice({
     });
 
     // LOGOUT
+    builder.addCase(logout.pending, (state: IAuthState) => {
+      state.isLoading = true;
+    });
     builder.addCase(logout.fulfilled, (state: IAuthState) => {
       state.isLoading = false;
       state.isLoggedIn = false;
       state.accessToken = null;
       state.loggedInUser = null;
+    });
+    builder.addCase(logout.rejected, (state: IAuthState, action) => {
+      state.isLoading = false;
+      state.error = action.error;
     });
 
     // SET AUTH STATE

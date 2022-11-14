@@ -12,6 +12,7 @@ export const login = createAsyncThunk('auth/login', async (loginData: ILoginRequ
     username: loginData.username,
     password: loginData.password,
   });
+  // await sleep(5000);
   return response.data as ILoginResponse;
 });
 
@@ -27,3 +28,4 @@ export const setAuthState = createAsyncThunk(
     return loggedInUserData;
   },
 );
+// const sleep = (time: number): Promise<void> => new Promise<void>((resolve) => setTimeout(resolve, time));

@@ -1,6 +1,5 @@
-import { SerializedError } from '@reduxjs/toolkit';
-
-import { IUser } from '../users/user.interface';
+import {SerializedError} from '@reduxjs/toolkit';
+import {IUser} from './user.interface';
 
 export interface IAuthState {
   accessToken: string | null;

@@ -7,9 +7,5 @@
     /* Completeness */
     "skipLibCheck": true,                                 /* Skip type checking all .d.ts files. */
     "noImplicitAny": false,
-    "lib": [
-      "es2018",
-      "dom"
-    ]
   }
 }
