@@ -1,49 +1,109 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback} from 'react';
+import {Controller, useForm} from 'react-hook-form';
 import {ActivityIndicator, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {useNavigate} from 'react-router-native';
-import {IAuthState} from '../../interfaces/auth/auth-state.interface';
+import {zodResolver} from '@hookform/resolvers/zod';
+import {z} from 'zod';
 
+import {IAuthState} from '../../interfaces/auth/auth-state.interface';
+import {ILoginRequest} from '../../interfaces/auth/login-request.interface';
 import {ILoginResponse} from '../../interfaces/auth/login-response.interface';
 import {login} from '../../store/auth/auth-api';
 import store, {RootState, useAppSelector} from '../../store/store';
 import {setTokenToLocalStorage} from '../../utils/auth-utils';
+import {styles} from './Login.styles';
 
 const Login = (): JSX.Element => {
   const {isLoading} = useAppSelector<IAuthState>((state: RootState) => state.auth);
   const navigate = useNavigate();
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
 
-  const onPressLogin = useCallback(async (): Promise<void> => {
-    const loginResponse = await store.dispatch(login({username, password}));
-    if (loginResponse.meta.requestStatus === 'fulfilled') {
-      const loginResponseData = loginResponse.payload as ILoginResponse;
-      setTokenToLocalStorage(loginResponseData.content.accessToken || '');
-      navigate('/');
-    }
-  }, [navigate, password, username]);
+  const loginSchema = z.object({
+    username: z.string().min(1, 'A felhasználónév kitöltése kötelező'),
+    password: z.string().min(1, 'A jelszó kitöltése kötelező'),
+  });
+
+  type FormSchemaType = z.infer<typeof loginSchema>;
+
+  const {
+    control,
+    handleSubmit,
+    formState: {errors, isValid},
+  } = useForm<FormSchemaType>({
+    defaultValues: {username: '', password: ''},
+    mode: 'onChange',
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onPressLogin = useCallback(
+    async (loginData: ILoginRequest): Promise<void> => {
+      const loginResponse = await store.dispatch(login(loginData));
+      if (loginResponse.meta.requestStatus === 'fulfilled') {
+        const loginResponseData = loginResponse.payload as ILoginResponse;
+        setTokenToLocalStorage(loginResponseData.content.accessToken || '');
+        navigate('/');
+      } else {
+        console.error('Hiba a bejelentkezés során');
+      }
+    },
+    [navigate],
+  );
 
   return (
-    <View style={{padding: 30}}>
-      <Text>Felhasználónév *</Text>
-      <TextInput style={{borderWidth: 1, marginBottom: 20}} onChangeText={setUsername} />
+    <View style={[styles.mainContainer]}>
+      <View style={[styles.usernameContainer]}>
+        <Text>Felhasználónév *</Text>
+        <Controller
+          control={control}
+          name="username"
+          render={({field: {onChange, onBlur, value}}) => (
+            <TextInput
+              autoFocus={true}
+              editable={!isLoading}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              style={[errors.username ? styles.inputFieldInvalid : styles.inputFieldValid]}
+            />
+          )}
+        />
+        {errors.username && <Text style={[styles.warningText]}>{errors.username.message}</Text>}
+      </View>
 
-      <Text>Jelszó *</Text>
-      <TextInput style={{borderWidth: 1}} onChangeText={setPassword} secureTextEntry={true} />
+      <View>
+        <Text>Jelszó *</Text>
+        <Controller
+          control={control}
+          name="password"
+          render={({field: {onChange, onBlur, value}}) => (
+            <TextInput
+              secureTextEntry={true}
+              editable={!isLoading}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              style={[errors.password ? styles.inputFieldInvalid : styles.inputFieldValid]}
+            />
+          )}
+        />
+        {errors.password && <Text style={[styles.warningText]}>{errors.password.message}</Text>}
+      </View>
 
-      <View style={{marginTop: 20}}>
+      <View style={[styles.loginButtonContainer]}>
         {isLoading ? (
-          <TouchableOpacity
-            onPress={onPressLogin}
-            style={{backgroundColor: '#4a8ef1', height: 40, alignContent: 'center', borderRadius: 10}}>
-            <ActivityIndicator />
-            <Text style={{color: 'white', textAlign: 'center'}}>Belépés...</Text>
+          <TouchableOpacity style={[styles.loginButtonDisabled]} disabled={true}>
+            <View style={[styles.loginButtonContent]}>
+              <ActivityIndicator style={[styles.spinner]} color="white" size="small" />
+              <Text style={[styles.loginButtonText]}>Bejelentkezés...</Text>
+            </View>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
-            onPress={onPressLogin}
-            style={{backgroundColor: '#4a8ef1', height: 40, alignContent: 'center', borderRadius: 10}}>
-            <Text style={{color: 'white', textAlign: 'center'}}>Belépés</Text>
+            onPress={handleSubmit(onPressLogin)}
+            style={[isValid ? styles.loginButton : styles.loginButtonDisabled]}
+            disabled={!isValid}>
+            <View style={[styles.loginButtonContent]}>
+              <Text style={[styles.loginButtonText]}>Bejelentkezés</Text>
+            </View>
           </TouchableOpacity>
         )}
       </View>

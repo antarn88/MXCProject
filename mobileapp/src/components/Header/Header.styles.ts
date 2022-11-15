@@ -16,6 +16,7 @@ export const styles = StyleSheet.create({
   labels: {
     marginRight: 6,
     justifyContent: 'center',
+    alignItems: 'flex-end',
   },
   image: {
     borderRadius: 30,
@@ -25,7 +26,6 @@ export const styles = StyleSheet.create({
     fontSize: 14,
   },
   logoutLabel: {
-    textAlign: 'right',
     fontSize: 14,
   },
 });
