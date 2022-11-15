@@ -1,24 +1,19 @@
 import axios, {AxiosError, AxiosPromise, AxiosRequestConfig, AxiosResponse} from 'axios';
-import {decodeToken, isExpired} from 'react-jwt';
 import {API_URL} from 'react-native-dotenv';
+import jwt_decode from 'jwt-decode';
 
 import store from '../store/store';
 import {logout as logoutAsyncThunk, setAuthState} from '../store/auth/auth-api';
 import {IDecodedToken} from '../interfaces/auth/decoded-token.interface';
 import {IProduct} from '../interfaces/products/product.interface';
-import {
-  clearLocalStorage,
-  deleteDataFromLocalStorage,
-  getDataFromLocalStorage,
-  storeDataToLocalStorage,
-} from './local-storage-utils';
+import {deleteDataFromLocalStorage, getDataFromLocalStorage, storeDataToLocalStorage} from './local-storage-utils';
 
 // REQUEST WITH AUTH HEADER
 export const requestWithAuthHeader = async (options: AxiosRequestConfig): Promise<AxiosPromise> => {
   const client = axios.create({baseURL: API_URL});
-  const accessToken = getTokenFromLocalStorage();
-  const decodedToken = decodeToken(await accessToken) as IDecodedToken;
-  const isTokenExpired = isExpired(await accessToken);
+  const accessToken = await getTokenFromLocalStorage();
+  const decodedToken = jwt_decode(accessToken) as IDecodedToken;
+  const isTokenExpired = decodedToken?.exp * 1000 < Date.now();
 
   if (accessToken && decodedToken && !isTokenExpired) {
     client.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
@@ -61,8 +56,8 @@ export const hasToken = async (): Promise<boolean> => ((await getDataFromLocalSt
 export const setAuthStateFromToken = (): void => {
   (async (): Promise<void> => {
     const accessToken = await getTokenFromLocalStorage();
-    const decodedToken = decodeToken(accessToken) as IDecodedToken;
-    const userId = decodedToken.sub;
+    const decodedToken = jwt_decode(accessToken) as IDecodedToken;
+    const userId = decodedToken?.sub;
     const response = await axios.get(`${API_URL}/users/${userId}`, {
       headers: {Authorization: `Bearer ${accessToken}`},
     });

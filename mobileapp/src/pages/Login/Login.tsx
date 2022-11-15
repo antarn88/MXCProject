@@ -1,5 +1,5 @@
 import React, {useCallback, useState} from 'react';
-import {ActivityIndicator, Button, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {useNavigate} from 'react-router-native';
 import {IAuthState} from '../../interfaces/auth/auth-state.interface';
 

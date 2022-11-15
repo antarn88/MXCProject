@@ -1,9 +1,9 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
-import axios from 'axios';
 import {API_URL} from 'react-native-dotenv';
 
 import {IPageOptions} from '../../interfaces/page-options.interface';
 import {IProduct} from '../../interfaces/products/product.interface';
+import {requestWithAuthHeader} from '../../utils/auth-utils';
 
 export const getProducts = createAsyncThunk('products/getProducts', async (pageOptions: IPageOptions) => {
   const orderBy = pageOptions.orderBy;
@@ -11,23 +11,26 @@ export const getProducts = createAsyncThunk('products/getProducts', async (pageO
   const pageIndex = pageOptions.pageIndex + 1;
   const limit = pageOptions.limit;
 
-  const response = await axios.get(`${API_URL}/products?orderBy=${orderBy}&order=${order}&pageIndex=${pageIndex}&limit=${limit}`);
+  const response = await requestWithAuthHeader({
+    url: `/products?orderBy=${orderBy}&order=${order}&pageIndex=${pageIndex}&limit=${limit}`,
+    method: 'get',
+  });
   // await sleep(500);
   return response.data.content.results as IProduct[];
 });
 
 export const updateProduct = createAsyncThunk('products/updateProduct', async (product: IProduct) => {
-  const response = await axios.put(`${API_URL}/products/${product.id}`, product);
+  const response = await requestWithAuthHeader({url: `${API_URL}/products/${product.id}`, method: 'put', data: product});
   return response.data;
 });
 
 export const createProduct = createAsyncThunk('products/createProduct', async (product: IProduct) => {
-  const response = await axios.post(`${API_URL}/products`, product);
+  const response = await requestWithAuthHeader({url: `${API_URL}/products`, method: 'post', data: product});
   return response.data.content;
 });
 
 export const deleteProduct = createAsyncThunk('products/deleteProduct', async (id: string) => {
-  const response = await axios.delete(`${API_URL}/products/${id}`);
+  const response = await requestWithAuthHeader({url: `${API_URL}/products/${id}`, method: 'delete'});
   return response.data;
 });
 
