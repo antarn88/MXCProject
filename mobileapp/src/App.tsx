@@ -12,7 +12,7 @@ import {hasToken} from './utils/auth-utils';
 
 const App = (): JSX.Element => {
   const {isLoggedIn} = useAppSelector<IAuthState>((state: RootState) => state.auth);
-  const [hasTokenInLocalStorage, setHasTokenInLocalStorage] = useState<boolean>(false);
+  const [hasTokenInLocalStorage, setHasTokenInLocalStorage] = useState<boolean | null>(null);
   const navigate = useNavigate();
 
   useEffect((): void => {
@@ -23,26 +23,30 @@ const App = (): JSX.Element => {
 
   return (
     <View>
-      {/* HEADER */}
-      {(isLoggedIn || hasTokenInLocalStorage) && <Header />}
+      {hasTokenInLocalStorage !== null && (
+        <View>
+          {/* HEADER */}
+          {(isLoggedIn || hasTokenInLocalStorage) && <Header />}
 
-      <Routes>
-        {/* HOME */}
-        {isLoggedIn || hasTokenInLocalStorage ? (
-          <Route path="/" element={<Home />} />
-        ) : (
-          <Route path="/" element={<Navigate to="/login" />} />
-        )}
+          <Routes>
+            {/* LOGIN */}
+            <Route path="/login" element={<Login />} />
 
-        {/* LOGIN */}
-        <Route path="/login" element={<Login />} />
+            {/* PRODUCT EDITOR */}
+            <Route path="/:productId" element={<ProductEditor />} />
 
-        {/* PRODUCT EDITOR */}
-        <Route path="/:productId" element={<ProductEditor />} />
+            {/* HOME */}
+            {isLoggedIn || hasTokenInLocalStorage ? (
+              <Route path="/" element={<Home />} />
+            ) : (
+              <Route path="/" element={<Navigate to="/login" />} />
+            )}
 
-        {/* OTHER */}
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+            {/* OTHER */}
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </View>
+      )}
     </View>
   );
 };

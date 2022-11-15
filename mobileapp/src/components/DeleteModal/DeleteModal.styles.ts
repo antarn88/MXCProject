@@ -2,6 +2,7 @@ import {StyleSheet} from 'react-native';
 
 export const styles = StyleSheet.create({
   centeredView: {
+    backgroundColor: 'rgba(0,0,0,0.5)',
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -60,5 +61,10 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     alignContent: 'center',
     textAlign: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    minWidth: '80%',
+    justifyContent: 'space-evenly',
   },
 });

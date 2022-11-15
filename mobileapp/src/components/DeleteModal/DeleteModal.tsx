@@ -5,7 +5,7 @@ import {styles} from './DeleteModal.styles';
 
 const DeleteModal = ({modalVisible, setModalVisible, onDeleteProduct, isDeletingProduct}): JSX.Element => {
   return (
-    <View style={styles.centeredView}>
+    <View style={[styles.centeredView]}>
       <Modal
         animationType="slide"
         transparent={true}
@@ -13,11 +13,11 @@ const DeleteModal = ({modalVisible, setModalVisible, onDeleteProduct, isDeleting
         onRequestClose={() => {
           setModalVisible(!modalVisible);
         }}>
-        <View style={styles.centeredView}>
+        <View style={[styles.centeredView]}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Biztosan törli a terméket?</Text>
 
-            <View style={{flexDirection: 'row', minWidth: '80%', justifyContent: 'space-evenly'}}>
+            <View style={[styles.buttonContainer]}>
               <Pressable
                 style={[styles.button, styles.buttonClose, styles.cancelButton]}
                 onPress={() => setModalVisible(false)}

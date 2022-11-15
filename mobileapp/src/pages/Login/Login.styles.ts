@@ -28,6 +28,12 @@ export const styles = StyleSheet.create({
     height: 40,
     borderRadius: 5,
   },
+  loginLabel: {
+    color: '#485FFB',
+    fontSize: 25,
+    textTransform: 'uppercase',
+    marginBottom: 10,
+  },
   spinner: {
     marginRight: 5,
   },

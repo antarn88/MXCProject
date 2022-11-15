@@ -4,6 +4,7 @@ import {ActivityIndicator, Text, TextInput, TouchableOpacity, View} from 'react-
 import {useNavigate} from 'react-router-native';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {z} from 'zod';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {IAuthState} from '../../interfaces/auth/auth-state.interface';
 import {ILoginRequest} from '../../interfaces/auth/login-request.interface';
@@ -50,62 +51,69 @@ const Login = (): JSX.Element => {
 
   return (
     <View style={[styles.mainContainer]}>
-      <View style={[styles.usernameContainer]}>
-        <Text>Felhasználónév *</Text>
-        <Controller
-          control={control}
-          name="username"
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              autoFocus={true}
-              editable={!isLoading}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              style={[errors.username ? styles.inputFieldInvalid : styles.inputFieldValid]}
-            />
-          )}
-        />
-        {errors.username && <Text style={[styles.warningText]}>{errors.username.message}</Text>}
-      </View>
+      <Text style={[styles.loginLabel]}>
+        <MaterialCommunityIcons name="login" size={25} color={'#485FFB'} />
+        <Text> Bejelentkezés</Text>
+      </Text>
 
-      <View>
-        <Text>Jelszó *</Text>
-        <Controller
-          control={control}
-          name="password"
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              secureTextEntry={true}
-              editable={!isLoading}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              style={[errors.password ? styles.inputFieldInvalid : styles.inputFieldValid]}
-            />
-          )}
-        />
-        {errors.password && <Text style={[styles.warningText]}>{errors.password.message}</Text>}
-      </View>
+      <View style={{padding: 20}}>
+        <View style={[styles.usernameContainer]}>
+          <Text>Felhasználónév *</Text>
+          <Controller
+            control={control}
+            name="username"
+            render={({field: {onChange, onBlur, value}}) => (
+              <TextInput
+                autoFocus={true}
+                editable={!isLoading}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                style={[errors.username ? styles.inputFieldInvalid : styles.inputFieldValid]}
+              />
+            )}
+          />
+          {errors.username && <Text style={[styles.warningText]}>{errors.username.message}</Text>}
+        </View>
 
-      <View style={[styles.loginButtonContainer]}>
-        {isLoading ? (
-          <TouchableOpacity style={[styles.loginButtonDisabled]} disabled={true}>
-            <View style={[styles.loginButtonContent]}>
-              <ActivityIndicator style={[styles.spinner]} color="white" size="small" />
-              <Text style={[styles.loginButtonText]}>Bejelentkezés...</Text>
-            </View>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            onPress={handleSubmit(onPressLogin)}
-            style={[isValid ? styles.loginButton : styles.loginButtonDisabled]}
-            disabled={!isValid}>
-            <View style={[styles.loginButtonContent]}>
-              <Text style={[styles.loginButtonText]}>Bejelentkezés</Text>
-            </View>
-          </TouchableOpacity>
-        )}
+        <View>
+          <Text>Jelszó *</Text>
+          <Controller
+            control={control}
+            name="password"
+            render={({field: {onChange, onBlur, value}}) => (
+              <TextInput
+                secureTextEntry={true}
+                editable={!isLoading}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                style={[errors.password ? styles.inputFieldInvalid : styles.inputFieldValid]}
+              />
+            )}
+          />
+          {errors.password && <Text style={[styles.warningText]}>{errors.password.message}</Text>}
+        </View>
+
+        <View style={[styles.loginButtonContainer]}>
+          {isLoading ? (
+            <TouchableOpacity style={[styles.loginButtonDisabled]} disabled={true}>
+              <View style={[styles.loginButtonContent]}>
+                <ActivityIndicator style={[styles.spinner]} color="white" size="small" />
+                <Text style={[styles.loginButtonText]}>Bejelentkezés...</Text>
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={handleSubmit(onPressLogin)}
+              style={[isValid ? styles.loginButton : styles.loginButtonDisabled]}
+              disabled={!isValid}>
+              <View style={[styles.loginButtonContent]}>
+                <Text style={[styles.loginButtonText]}>Bejelentkezés</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
     </View>
   );

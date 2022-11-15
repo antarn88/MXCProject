@@ -34,7 +34,6 @@ const ProductEditor = (): JSX.Element => {
 
   const onSubmit = useCallback(
     async (fieldValues: FieldValues): Promise<void> => {
-      console.log('updatedProduct:', fieldValues);
       let modifiedProduct: IProduct;
 
       if (product?.id) {
