@@ -33,7 +33,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   // CREATE PRODUCT
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiBearerAuth()
   @ApiResponse({ status: 201, description: 'Success', type: CreateProductSuccessResponse })
@@ -60,7 +60,7 @@ export class ProductsController {
   }
 
   // GET ALL PRODUCTS
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiBearerAuth()
   @ApiQuery({ name: 'pageIndex', type: Number, required: false })
@@ -101,7 +101,7 @@ export class ProductsController {
   }
 
   // GET ONE PRODUCT
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   @ApiBearerAuth()
   @ApiParam({ name: 'id', type: String })
@@ -137,7 +137,7 @@ export class ProductsController {
   }
 
   // UPDATE PRODUCT
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   @ApiBearerAuth()
   @ApiParam({ name: 'id', type: String })
@@ -165,7 +165,7 @@ export class ProductsController {
   }
 
   // DELETE PRODUCT
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @ApiBearerAuth()
   @ApiParam({ name: 'id', type: String })
