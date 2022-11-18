@@ -1,34 +1,40 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {Button, Text, TextInput, ToastAndroid, View} from 'react-native';
 import {useLocation, useNavigate} from 'react-router-native';
-import {FieldValues, useController, useForm} from 'react-hook-form';
+import {Controller, FieldValues, useForm} from 'react-hook-form';
+import {zodResolver} from '@hookform/resolvers/zod';
+import {z} from 'zod';
 
 import {styles} from './ProductEditor.styles';
 import {IProduct} from '../../interfaces/products/product.interface';
 import {createProduct, updateProduct} from '../../store/products/products-api';
-import store from '../../store/store';
+import store, {RootState, useAppSelector} from '../../store/store';
+import {IProductsState} from '../../interfaces/products/products-state.interface';
 
 const ProductEditor = (): JSX.Element => {
+  const {isLoading} = useAppSelector<IProductsState>((state: RootState) => state.products);
   const navigate = useNavigate();
   const location = useLocation();
   const product = location.state?.product as IProduct;
-  const {control, handleSubmit} = useForm();
 
-  const Input = ({name, inputControl, value, keyboardType}) => {
-    const {field} = useController({
-      control: inputControl,
-      defaultValue: value,
-      name,
-    });
-    return (
-      <TextInput
-        style={[styles.inputField]}
-        value={field.value?.toString()}
-        onChangeText={field.onChange}
-        keyboardType={keyboardType}
-      />
-    );
-  };
+  const productSchema = z.object({
+    productName: z.string().min(1, 'A terméknév kitöltése kötelező'),
+    productNumber: z.string().min(1, 'A cikkszám kitöltése kötelező'),
+    price: z.string().min(1, 'Az ár kitöltése kötelező'),
+  });
+
+  type FormSchemaType = z.infer<typeof productSchema>;
+
+  const {
+    control,
+    handleSubmit,
+    formState: {errors, isValid},
+    setValue,
+  } = useForm<FormSchemaType>({
+    defaultValues: {productName: '', productNumber: '', price: ''},
+    mode: 'onChange',
+    resolver: zodResolver(productSchema),
+  });
 
   const backToProductList = useCallback((): void => navigate(-1), [navigate]);
 
@@ -68,6 +74,16 @@ const ProductEditor = (): JSX.Element => {
     [backToProductList, product],
   );
 
+  const setFormValues = useCallback((): void => {
+    if (product) {
+      setValue('productName', product.productName);
+      setValue('productNumber', product.productNumber.toString());
+      setValue('price', product.price.toString());
+    }
+  }, [product, setValue]);
+
+  useEffect((): void => setFormValues(), [setFormValues]);
+
   return (
     <View style={[styles.container]}>
       <Text style={[styles.editorTitle]}>{product ? 'Termék szerkesztő' : 'Új termék felvétele'}</Text>
@@ -75,17 +91,59 @@ const ProductEditor = (): JSX.Element => {
       <View style={[styles.formContainer]}>
         <View>
           <Text style={[styles.label]}>Terméknév *</Text>
-          <Input name="productName" inputControl={control} value={product?.productName} keyboardType={'default'} />
+          <Controller
+            control={control}
+            name="productName"
+            render={({field: {onChange, onBlur, value}}) => (
+              <TextInput
+                keyboardType={'default'}
+                editable={!isLoading}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                style={[errors.productName ? styles.inputFieldInvalid : styles.inputFieldValid]}
+              />
+            )}
+          />
+          {errors.productName && <Text style={[styles.warningText]}>{errors.productName.message}</Text>}
         </View>
 
         <View>
           <Text style={[styles.label]}>Cikkszám *</Text>
-          <Input name="productNumber" inputControl={control} value={product?.productNumber} keyboardType={'number-pad'} />
+          <Controller
+            control={control}
+            name="productNumber"
+            render={({field: {onChange, onBlur, value}}) => (
+              <TextInput
+                editable={!isLoading}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                keyboardType={'number-pad'}
+                style={[errors.productNumber ? styles.inputFieldInvalid : styles.inputFieldValid]}
+              />
+            )}
+          />
+          {errors.productNumber && <Text style={[styles.warningText]}>{errors.productNumber.message}</Text>}
         </View>
 
         <View>
           <Text style={[styles.label]}>Ár *</Text>
-          <Input name="price" inputControl={control} value={product?.price} keyboardType={'number-pad'} />
+          <Controller
+            control={control}
+            name="price"
+            render={({field: {onChange, onBlur, value}}) => (
+              <TextInput
+                editable={!isLoading}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                keyboardType={'number-pad'}
+                style={[errors.price ? styles.inputFieldInvalid : styles.inputFieldValid]}
+              />
+            )}
+          />
+          {errors.price && <Text style={[styles.warningText]}>{errors.price.message}</Text>}
         </View>
 
         <View style={styles.buttonContainer}>

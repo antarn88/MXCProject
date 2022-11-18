@@ -1,6 +1,5 @@
 import {createSlice, ActionReducerMapBuilder} from '@reduxjs/toolkit';
 
-import {IProduct} from '../../interfaces/products/product.interface';
 import {IProductsState} from '../../interfaces/products/products-state.interface';
 import {createProduct, deleteProduct, getProducts, updateProduct} from './products-api';
 
@@ -19,20 +18,27 @@ const initialState: IProductsState = {
 const productsSlice = createSlice({
   name: 'products',
   initialState,
-  reducers: {},
+  reducers: {
+    resetProductsErrors(state: IProductsState) {
+      state.error.errorAtCreateProduct = null;
+      state.error.errorAtDeleteProduct = null;
+      state.error.errorAtGetProducts = null;
+      state.error.errorAtUpdateProduct = null;
+    },
+  },
   extraReducers: (builder: ActionReducerMapBuilder<IProductsState>) => {
     // GET PRODUCTS
     builder.addCase(getProducts.pending, (state: IProductsState) => {
       state.isLoading = true;
       state.error.errorAtGetProducts = null;
     });
-    builder.addCase(getProducts.fulfilled, (state: IProductsState, {payload}: {payload: IProduct[]}) => {
+    builder.addCase(getProducts.fulfilled, (state: IProductsState, action) => {
       state.isLoading = false;
-      state.products = payload;
+      state.products = action.payload;
     });
     builder.addCase(getProducts.rejected, (state: IProductsState, action) => {
-      state.isLoading = false;
       state.error.errorAtGetProducts = action.error;
+      state.isLoading = false;
     });
 
     // UPDATE PRODUCT
@@ -76,4 +82,5 @@ const productsSlice = createSlice({
   },
 });
 
+export const {resetProductsErrors} = productsSlice.actions;
 export default productsSlice;

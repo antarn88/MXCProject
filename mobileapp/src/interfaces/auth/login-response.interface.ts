@@ -1,4 +1,4 @@
-import { IUser } from '../users/user.interface';
+import {IUser} from './user.interface';
 
 export interface ILoginResponse {
   content: {

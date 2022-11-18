@@ -1,4 +1,4 @@
-import axios, {AxiosError, AxiosPromise, AxiosRequestConfig, AxiosResponse} from 'axios';
+import axios, {AxiosPromise, AxiosRequestConfig, AxiosResponse} from 'axios';
 import {API_URL} from 'react-native-dotenv';
 import jwt_decode from 'jwt-decode';
 
@@ -18,24 +18,17 @@ export const requestWithAuthHeader = async (options: AxiosRequestConfig): Promis
   if (accessToken && decodedToken && !isTokenExpired) {
     client.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
   } else {
-    logout();
+    await logout();
     return client(options);
   }
 
-  client.interceptors.response.use(
-    async (response: AxiosResponse): Promise<AxiosResponse> => {
-      const {isLoggedIn} = store.getState().auth;
-      if (!isLoggedIn && (await hasToken())) {
-        setAuthStateFromToken();
-      }
-      return response;
-    },
-    async (error: AxiosError) => {
-      if (error.response?.status === 401) {
-        logout();
-      }
-    },
-  );
+  client.interceptors.response.use(async (response: AxiosResponse): Promise<AxiosResponse> => {
+    const {isLoggedIn} = store.getState().auth;
+    if (!isLoggedIn && (await hasToken())) {
+      setAuthStateFromToken();
+    }
+    return response;
+  });
 
   return client(options);
 };

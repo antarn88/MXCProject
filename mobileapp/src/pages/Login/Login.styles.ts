@@ -32,7 +32,6 @@ export const styles = StyleSheet.create({
     color: '#485FFB',
     fontSize: 25,
     textTransform: 'uppercase',
-    marginBottom: 10,
   },
   spinner: {
     marginRight: 5,
@@ -55,5 +54,31 @@ export const styles = StyleSheet.create({
   },
   usernameContainer: {
     marginBottom: 14,
+  },
+  loginFormContainer: {
+    paddingVertical: 20,
+  },
+  errorMessageContainer: {
+    marginVertical: 10,
+    borderWidth: 1,
+    backgroundColor: '#C34846',
+    padding: 10,
+    borderRadius: 5,
+    borderColor: '#ccc',
+    flexDirection: 'row',
+    position: 'relative',
+    alignItems: 'center',
+  },
+  errorMessageIcon: {
+    color: 'white',
+    alignSelf: 'flex-start',
+  },
+  errorMessageTextContainer: {
+    marginLeft: 15,
+  },
+  errorMessageText: {
+    color: 'white',
+    alignSelf: 'center',
+    fontWeight: 'bold',
   },
 });

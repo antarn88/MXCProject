@@ -13,9 +13,12 @@ import {styles} from './Home.styles';
 import {TableHeader} from '../../components/TableHeader/TableHeader';
 import {TableRow} from '../../components/TableRow/TableRow';
 import DeleteModal from '../../components/DeleteModal/DeleteModal';
+import {IAuthState} from '../../interfaces/auth/auth-state.interface';
+import {resetProductsErrors} from '../../store/products/products-slice';
 
 const Home = (): JSX.Element => {
-  const {products, isLoading} = useAppSelector<IProductsState>((state: RootState) => state.products);
+  const {products, isLoading, error} = useAppSelector<IProductsState>((state: RootState) => state.products);
+  const {isLoggedIn, accessToken} = useAppSelector<IAuthState>((state: RootState) => state.auth);
   const [displayedProducts, setDisplayedProducts] = useState<IProduct[]>([]);
   const [pageIndex, setPageIndex] = useState<number>(0);
   const [orderBy, setOrderBy] = useState<OrderByOption>(OrderByOption.PRODUCT_NAME);
@@ -23,22 +26,33 @@ const Home = (): JSX.Element => {
   const [currentProductId, setCurrentProductId] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [isDeletingProduct, setIsDeletingProduct] = useState(false);
+
   const navigate = useNavigate();
-  const pageSize = 10;
+  const pageSize = 15;
+
+  useEffect((): void => {
+    (async (): Promise<void> => {
+      if (!accessToken && !isLoggedIn && error.errorAtGetProducts?.message?.includes('401')) {
+        navigate('/login');
+        store.dispatch(resetProductsErrors);
+        setTimeout(() => {
+          console.warn('Lejárt munkamenet, jelentkezzen be újra!');
+        }, 500);
+      }
+    })();
+  }, [accessToken, isLoggedIn, navigate, error]);
 
   const fetchProducts = useCallback(async (): Promise<void> => {
-    console.log('FETCH MEGHÍVÓDOTT, az oldal:', pageIndex);
-    if (pageIndex !== 0) {
+    if (pageIndex !== 0 && !isLoading) {
       const request = await store.dispatch(getProducts({pageIndex, limit: pageSize, order, orderBy}));
       if (request.meta.requestStatus === 'fulfilled') {
+        console.log('FETCH KÉRÉS SIKERES, az oldal:', pageIndex);
         const productListPiece = request.payload as IProduct[];
-        setPageIndex((previousPage: number) => previousPage + 1);
         setDisplayedProducts([...displayedProducts, ...productListPiece]);
-      } else {
-        console.log('Hiba a termékek betöltésekor!');
+        setPageIndex((previousPage: number) => previousPage + 1);
       }
     }
-  }, [displayedProducts, order, orderBy, pageIndex]);
+  }, [displayedProducts, isLoading, order, orderBy, pageIndex]);
 
   const reloadTableAfterSorting = useCallback(async (): Promise<void> => {
     setDisplayedProducts([]);
@@ -112,7 +126,7 @@ const Home = (): JSX.Element => {
             keyExtractor={keyExtractor}
             ListFooterComponent={<Loading loadingText={'Termékek betöltése...'} />}
             onEndReached={fetchProducts}
-            onEndReachedThreshold={0.9}
+            onEndReachedThreshold={0.8}
             stickyHeaderIndices={[0]}
           />
         </ScrollView>

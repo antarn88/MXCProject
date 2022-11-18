@@ -15,7 +15,7 @@ import {setTokenToLocalStorage} from '../../utils/auth-utils';
 import {styles} from './Login.styles';
 
 const Login = (): JSX.Element => {
-  const {isLoading} = useAppSelector<IAuthState>((state: RootState) => state.auth);
+  const {isLoading, error} = useAppSelector<IAuthState>((state: RootState) => state.auth);
   const navigate = useNavigate();
 
   const loginSchema = z.object({
@@ -42,8 +42,6 @@ const Login = (): JSX.Element => {
         const loginResponseData = loginResponse.payload as ILoginResponse;
         setTokenToLocalStorage(loginResponseData.content.accessToken || '');
         navigate('/');
-      } else {
-        console.error('Hiba a bejelentkezés során');
       }
     },
     [navigate],
@@ -56,7 +54,23 @@ const Login = (): JSX.Element => {
         <Text> Bejelentkezés</Text>
       </Text>
 
-      <View style={{padding: 20}}>
+      <View style={[styles.loginFormContainer]}>
+        {/* ERROR MESSAGES */}
+        {!isLoading && error && (
+          <View style={[styles.errorMessageContainer]}>
+            <MaterialCommunityIcons name="alert" size={25} style={[styles.errorMessageIcon]} />
+            {error.code === 'ERR_BAD_REQUEST' ? (
+              <View style={[styles.errorMessageTextContainer]}>
+                <Text style={[styles.errorMessageText]}>Hibás felhasználónév vagy jelszó!</Text>
+              </View>
+            ) : (
+              <View style={[styles.errorMessageTextContainer]}>
+                <Text style={[styles.errorMessageText]}>A szerver nem elérhető!</Text>
+              </View>
+            )}
+          </View>
+        )}
+
         <View style={[styles.usernameContainer]}>
           <Text>Felhasználónév *</Text>
           <Controller
