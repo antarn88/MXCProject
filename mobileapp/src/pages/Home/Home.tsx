@@ -26,21 +26,9 @@ const Home = (): JSX.Element => {
   const [currentProductId, setCurrentProductId] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [isDeletingProduct, setIsDeletingProduct] = useState(false);
-
   const navigate = useNavigate();
-  const pageSize = 15;
 
-  useEffect((): void => {
-    (async (): Promise<void> => {
-      if (!accessToken && !isLoggedIn && error.errorAtGetProducts?.message?.includes('401')) {
-        navigate('/login');
-        store.dispatch(resetProductsErrors);
-        setTimeout(() => {
-          console.warn('Lejárt munkamenet, jelentkezzen be újra!');
-        }, 500);
-      }
-    })();
-  }, [accessToken, isLoggedIn, navigate, error]);
+  const pageSize = 15;
 
   const fetchProducts = useCallback(async (): Promise<void> => {
     if (pageIndex !== 0 && !isLoading) {
@@ -50,6 +38,8 @@ const Home = (): JSX.Element => {
         const productListPiece = request.payload as IProduct[];
         setDisplayedProducts([...displayedProducts, ...productListPiece]);
         setPageIndex((previousPage: number) => previousPage + 1);
+      } else {
+        console.error('Hiba a termékek betöltésekor!');
       }
     }
   }, [displayedProducts, isLoading, order, orderBy, pageIndex]);
@@ -87,7 +77,7 @@ const Home = (): JSX.Element => {
         setModalVisible(false);
         setIsDeletingProduct(false);
         setCurrentProductId(null);
-        ToastAndroid.show('Hiba a termék törlésekor', ToastAndroid.LONG);
+        console.error('Hiba a termék törlésekor!');
       }
     }
   }, [currentProductId, displayedProducts]);
@@ -97,6 +87,22 @@ const Home = (): JSX.Element => {
   useEffect((): void => {
     reloadTableAfterSorting();
   }, [reloadTableAfterSorting]);
+
+  useEffect((): void => {
+    (async (): Promise<void> => {
+      if (
+        !accessToken &&
+        !isLoggedIn &&
+        (error.errorAtGetProducts?.message?.includes('401') || error.errorAtDeleteProduct?.message?.includes('401'))
+      ) {
+        navigate('/login');
+        store.dispatch(resetProductsErrors);
+        setTimeout(() => {
+          console.warn('Lejárt munkamenet, jelentkezzen be újra!');
+        }, 500);
+      }
+    })();
+  }, [accessToken, isLoggedIn, navigate, error]);
 
   return (
     <View style={[styles.mainContainer]}>

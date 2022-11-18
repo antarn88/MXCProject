@@ -50,8 +50,8 @@ const productsSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(updateProduct.rejected, (state: IProductsState, action) => {
-      state.isLoading = false;
       state.error.errorAtUpdateProduct = action.error;
+      state.isLoading = false;
     });
 
     // CREATE PRODUCT
@@ -63,8 +63,8 @@ const productsSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(createProduct.rejected, (state: IProductsState, action) => {
-      state.isLoading = false;
       state.error.errorAtCreateProduct = action.error;
+      state.isLoading = false;
     });
 
     // DELETE PRODUCT
@@ -76,8 +76,8 @@ const productsSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(deleteProduct.rejected, (state: IProductsState, action) => {
-      state.isLoading = false;
       state.error.errorAtDeleteProduct = action.error;
+      state.isLoading = false;
     });
   },
 });

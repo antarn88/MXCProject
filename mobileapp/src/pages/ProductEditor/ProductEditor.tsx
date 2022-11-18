@@ -10,9 +10,12 @@ import {IProduct} from '../../interfaces/products/product.interface';
 import {createProduct, updateProduct} from '../../store/products/products-api';
 import store, {RootState, useAppSelector} from '../../store/store';
 import {IProductsState} from '../../interfaces/products/products-state.interface';
+import {IAuthState} from '../../interfaces/auth/auth-state.interface';
+import {resetProductsErrors} from '../../store/products/products-slice';
 
 const ProductEditor = (): JSX.Element => {
-  const {isLoading} = useAppSelector<IProductsState>((state: RootState) => state.products);
+  const {isLoading, error} = useAppSelector<IProductsState>((state: RootState) => state.products);
+  const {isLoggedIn, accessToken} = useAppSelector<IAuthState>((state: RootState) => state.auth);
   const navigate = useNavigate();
   const location = useLocation();
   const product = location.state?.product as IProduct;
@@ -54,7 +57,7 @@ const ProductEditor = (): JSX.Element => {
           backToProductList();
           ToastAndroid.show('Termék frissítése sikeres', ToastAndroid.LONG);
         } else {
-          ToastAndroid.show('Hiba a termék frissítésekor', ToastAndroid.LONG);
+          console.error('Hiba a termék frissítésekor!');
         }
       } else {
         modifiedProduct = {
@@ -67,7 +70,7 @@ const ProductEditor = (): JSX.Element => {
           backToProductList();
           ToastAndroid.show('Termék létrehozása sikeres', ToastAndroid.LONG);
         } else {
-          ToastAndroid.show('Hiba a termék létrehozásakor', ToastAndroid.LONG);
+          console.error('Hiba a termék létrehozásakor!');
         }
       }
     },
@@ -83,6 +86,22 @@ const ProductEditor = (): JSX.Element => {
   }, [product, setValue]);
 
   useEffect((): void => setFormValues(), [setFormValues]);
+
+  useEffect((): void => {
+    (async (): Promise<void> => {
+      if (
+        !accessToken &&
+        !isLoggedIn &&
+        (error?.errorAtUpdateProduct?.message?.includes('401') || error?.errorAtCreateProduct?.message?.includes('401'))
+      ) {
+        navigate('/login');
+        store.dispatch(resetProductsErrors);
+        setTimeout(() => {
+          console.warn('Lejárt munkamenet, jelentkezzen be újra!');
+        }, 500);
+      }
+    })();
+  }, [accessToken, isLoggedIn, navigate, error]);
 
   return (
     <View style={[styles.container]}>
