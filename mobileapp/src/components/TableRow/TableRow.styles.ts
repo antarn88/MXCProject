@@ -17,10 +17,10 @@ export const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   productNameCell: {
-    width: 147,
+    width: 135,
   },
   productNumberCell: {
-    width: 83,
+    width: 95,
   },
   priceCell: {
     width: 70,

@@ -84,6 +84,12 @@ const Home = (): JSX.Element => {
 
   const keyExtractor = useCallback((_item: IProduct, index: number) => index.toString(), []);
 
+  const headerCallback = useCallback(({newOrder, newOrderBy}: {newOrder: OrderOption; newOrderBy: OrderByOption}) => {
+    setOrder(newOrder);
+    setOrderBy(newOrderBy);
+    setPageIndex(0);
+  }, []);
+
   useEffect((): void => {
     reloadTableAfterSorting();
   }, [reloadTableAfterSorting]);
@@ -126,7 +132,7 @@ const Home = (): JSX.Element => {
           showsHorizontalScrollIndicator={false}
           style={styles.mainContainer}>
           <FlatList
-            ListHeaderComponent={TableHeader}
+            ListHeaderComponent={TableHeader({orderBy, order}, headerCallback)}
             data={displayedProducts}
             renderItem={(item: ListRenderItemInfo<IProduct>) => TableRow(item, showDeleteModal)}
             keyExtractor={keyExtractor}

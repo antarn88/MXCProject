@@ -120,7 +120,10 @@ const ProductEditor = (): JSX.Element => {
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
-                style={[errors.productName ? styles.inputFieldInvalid : styles.inputFieldValid]}
+                style={[
+                  errors.productName ? styles.inputFieldInvalid : styles.inputFieldValid,
+                  !errors.productName ? styles.inputFieldBottomMargin : null,
+                ]}
               />
             )}
           />
@@ -139,7 +142,10 @@ const ProductEditor = (): JSX.Element => {
                 onChangeText={onChange}
                 value={value}
                 keyboardType={'number-pad'}
-                style={[errors.productNumber ? styles.inputFieldInvalid : styles.inputFieldValid]}
+                style={[
+                  errors.productNumber ? styles.inputFieldInvalid : styles.inputFieldValid,
+                  !errors.productNumber ? styles.inputFieldBottomMargin : null,
+                ]}
               />
             )}
           />
@@ -158,7 +164,10 @@ const ProductEditor = (): JSX.Element => {
                 onChangeText={onChange}
                 value={value}
                 keyboardType={'number-pad'}
-                style={[errors.price ? styles.inputFieldInvalid : styles.inputFieldValid]}
+                style={[
+                  errors.price ? styles.inputFieldInvalid : styles.inputFieldValid,
+                  !errors.price ? styles.inputFieldBottomMargin : null,
+                ]}
               />
             )}
           />

@@ -12,15 +12,16 @@ export const styles = StyleSheet.create({
     borderRightWidth: 1,
     padding: 10,
     borderColor: '#DCDCDC',
+    alignItems: 'center',
   },
   alignSelfCenter: {
     alignSelf: 'center',
   },
   productNameCell: {
-    width: 147,
+    width: 135,
   },
   productNumberCell: {
-    width: 83,
+    width: 95,
   },
   priceCell: {
     width: 70,
@@ -30,5 +31,14 @@ export const styles = StyleSheet.create({
   },
   deleteCell: {
     width: 90,
+  },
+  headerCellContainer: {
+    flexDirection: 'row',
+  },
+  columnText: {
+    marginRight: 4,
+  },
+  columnIcon: {
+    marginTop: 1,
   },
 });

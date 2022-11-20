@@ -7,7 +7,7 @@ export const styles = StyleSheet.create({
   label: {
     marginHorizontal: 20,
     fontWeight: 'bold',
-    paddingBottom: 10,
+    paddingBottom: 7,
     fontSize: 16,
   },
   buttonContainer: {
@@ -43,7 +43,10 @@ export const styles = StyleSheet.create({
   warningText: {
     color: 'red',
     fontSize: 13,
-    paddingHorizontal: 15,
-    marginBottom: 10,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  inputFieldBottomMargin: {
+    marginBottom: 20,
   },
 });
