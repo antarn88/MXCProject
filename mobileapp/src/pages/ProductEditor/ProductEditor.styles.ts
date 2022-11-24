@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    padding: 10,
+    padding: 20,
     alignContent: 'space-around',
     justifyContent: 'center',
     marginTop: 10,
@@ -48,5 +48,43 @@ export const styles = StyleSheet.create({
   },
   inputFieldBottomMargin: {
     marginBottom: 20,
+  },
+  cancelButton: {
+    alignItems: 'center',
+    backgroundColor: 'gray',
+    padding: 10,
+    borderRadius: 7,
+    marginRight: 7,
+  },
+  cancelButtonDisabled: {
+    alignItems: 'center',
+    backgroundColor: '#CECACA',
+    padding: 10,
+    borderRadius: 7,
+    marginRight: 7,
+  },
+  saveButton: {
+    alignItems: 'center',
+    backgroundColor: '#2196F3',
+    padding: 10,
+    borderRadius: 7,
+  },
+  saveButtonDisabled: {
+    alignItems: 'center',
+    backgroundColor: '#90cbf9',
+    padding: 10,
+    borderRadius: 7,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  innerButtonContainer: {
+    width: '50%',
+  },
+  buttonValidText: {
+    color: 'white',
+    fontSize: 15,
+  },
+  spinner: {
+    marginRight: 5,
   },
 });

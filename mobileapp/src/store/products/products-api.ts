@@ -21,6 +21,7 @@ export const getProducts = createAsyncThunk('products/getProducts', async (pageO
 
 export const updateProduct = createAsyncThunk('products/updateProduct', async (product: IProduct) => {
   const response = await requestWithAuthHeader({url: `${API_URL}/products/${product.id}`, method: 'put', data: product});
+  // await sleep(8000);
   return response.data;
 });
 

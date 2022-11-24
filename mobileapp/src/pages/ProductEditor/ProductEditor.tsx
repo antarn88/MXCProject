@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect} from 'react';
-import {Button, Text, TextInput, ToastAndroid, View} from 'react-native';
+import {ActivityIndicator, Text, TextInput, ToastAndroid, TouchableOpacity, View} from 'react-native';
 import {useLocation, useNavigate} from 'react-router-native';
 import {Controller, FieldValues, useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
@@ -22,8 +22,16 @@ const ProductEditor = (): JSX.Element => {
 
   const productSchema = z.object({
     productName: z.string().min(1, 'A terméknév kitöltése kötelező'),
-    productNumber: z.string().min(1, 'A cikkszám kitöltése kötelező'),
-    price: z.string().min(1, 'Az ár kitöltése kötelező'),
+    productNumber: z
+      .string()
+      .min(1, 'A cikkszám kitöltése kötelező')
+      .regex(/^(?:[1-9]\d*)$/, 'Érvénytelen cikkszám')
+      .max(10, 'Érvénytelen cikkszám'),
+    price: z
+      .string()
+      .min(1, 'Az ár kitöltése kötelező')
+      .regex(/^(?:[1-9]\d*)$/, 'Érvénytelen ár')
+      .max(10, 'Érvénytelen ár'),
   });
 
   type FormSchemaType = z.infer<typeof productSchema>;
@@ -39,7 +47,7 @@ const ProductEditor = (): JSX.Element => {
     resolver: zodResolver(productSchema),
   });
 
-  const backToProductList = useCallback((): void => navigate(-1), [navigate]);
+  const backToProductList = useCallback((): void => navigate('/', {state: {backNavigated: true}}), [navigate]);
 
   const onSubmit = useCallback(
     async (fieldValues: FieldValues): Promise<void> => {
@@ -79,9 +87,9 @@ const ProductEditor = (): JSX.Element => {
 
   const setFormValues = useCallback((): void => {
     if (product) {
-      setValue('productName', product.productName);
-      setValue('productNumber', product.productNumber.toString());
-      setValue('price', product.price.toString());
+      setValue('productName', product.productName, {shouldValidate: true});
+      setValue('productNumber', product.productNumber.toString(), {shouldValidate: true});
+      setValue('price', product.price.toString(), {shouldValidate: true});
     }
   }, [product, setValue]);
 
@@ -175,8 +183,29 @@ const ProductEditor = (): JSX.Element => {
         </View>
 
         <View style={styles.buttonContainer}>
-          <Button title="Vissza" onPress={backToProductList} color={'gray'} />
-          <Button title="Mentés" onPress={handleSubmit((fieldValues: FieldValues) => onSubmit(fieldValues))} />
+          <View style={[styles.innerButtonContainer]}>
+            <TouchableOpacity
+              style={isLoading ? styles.cancelButtonDisabled : styles.cancelButton}
+              onPress={backToProductList}
+              disabled={isLoading}>
+              <Text style={[styles.buttonValidText]}>Vissza</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={[styles.innerButtonContainer]}>
+            <TouchableOpacity
+              disabled={!isValid || isLoading}
+              style={!isValid || isLoading ? styles.saveButtonDisabled : styles.saveButton}
+              onPress={handleSubmit((fieldValues: FieldValues) => onSubmit(fieldValues))}>
+              {isLoading && <ActivityIndicator style={[styles.spinner]} color="white" size="small" />}
+              <Text style={[styles.buttonValidText]}>
+                {product ? (
+                  <Text>{isLoading ? 'Mentés...' : 'Mentés'}</Text>
+                ) : (
+                  <Text>{isLoading ? 'Létrehozás...' : 'Létrehozás'}</Text>
+                )}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>

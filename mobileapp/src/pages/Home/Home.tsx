@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {View, FlatList, ScrollView, Text, Button, ListRenderItemInfo, GestureResponderEvent, ToastAndroid} from 'react-native';
-import {useNavigate} from 'react-router-native';
+import {useLocation, useNavigate} from 'react-router-native';
 
 import {IProduct} from '../../interfaces/products/product.interface';
 import {IProductsState} from '../../interfaces/products/products-state.interface';
@@ -16,6 +16,9 @@ import DeleteModal from '../../components/DeleteModal/DeleteModal';
 import {IAuthState} from '../../interfaces/auth/auth-state.interface';
 import {resetProductsErrors} from '../../store/products/products-slice';
 
+let orderBackup: OrderOption;
+let orderByBackup: OrderByOption;
+
 const Home = (): JSX.Element => {
   const {products, isLoading, error} = useAppSelector<IProductsState>((state: RootState) => state.products);
   const {isLoggedIn, accessToken} = useAppSelector<IAuthState>((state: RootState) => state.auth);
@@ -27,12 +30,21 @@ const Home = (): JSX.Element => {
   const [modalVisible, setModalVisible] = useState(false);
   const [isDeletingProduct, setIsDeletingProduct] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  let backNavigated = location.state?.backNavigated;
 
   const pageSize = 15;
 
   const fetchProducts = useCallback(async (): Promise<void> => {
     if (pageIndex !== 0 && !isLoading) {
-      const request = await store.dispatch(getProducts({pageIndex, limit: pageSize, order, orderBy}));
+      const request = await store.dispatch(
+        getProducts({
+          pageIndex,
+          limit: pageSize,
+          order: backNavigated && orderBackup ? orderBackup : order,
+          orderBy: backNavigated && orderByBackup ? orderByBackup : orderBy,
+        }),
+      );
       if (request.meta.requestStatus === 'fulfilled') {
         console.log('FETCH KÉRÉS SIKERES, az oldal:', pageIndex);
         const productListPiece = request.payload as IProduct[];
@@ -42,11 +54,18 @@ const Home = (): JSX.Element => {
         console.error('Hiba a termékek betöltésekor!');
       }
     }
-  }, [displayedProducts, isLoading, order, orderBy, pageIndex]);
+  }, [backNavigated, displayedProducts, isLoading, order, orderBy, pageIndex]);
 
   const reloadTableAfterSorting = useCallback(async (): Promise<void> => {
     setDisplayedProducts([]);
-    const request = await store.dispatch(getProducts({orderBy, order, pageIndex: 0, limit: pageSize}));
+    const request = await store.dispatch(
+      getProducts({
+        orderBy: backNavigated && orderByBackup ? orderByBackup : orderBy,
+        order: backNavigated && orderBackup ? orderBackup : order,
+        pageIndex: 0,
+        limit: pageSize,
+      }),
+    );
     if (request.meta.requestStatus === 'fulfilled') {
       const productListPiece = request.payload as IProduct[];
       setDisplayedProducts(productListPiece);
@@ -55,7 +74,7 @@ const Home = (): JSX.Element => {
     } else {
       console.error('Hiba a termékek betöltésekor!');
     }
-  }, [order, orderBy]);
+  }, [backNavigated, order, orderBy]);
 
   const onPressCreateProduct = useCallback((): void => navigate('/create'), [navigate]);
 
@@ -85,6 +104,8 @@ const Home = (): JSX.Element => {
   const keyExtractor = useCallback((_item: IProduct, index: number) => index.toString(), []);
 
   const headerCallback = useCallback(({newOrder, newOrderBy}: {newOrder: OrderOption; newOrderBy: OrderByOption}) => {
+    orderBackup = newOrder;
+    orderByBackup = newOrderBy;
     setOrder(newOrder);
     setOrderBy(newOrderBy);
     setPageIndex(0);
@@ -125,6 +146,13 @@ const Home = (): JSX.Element => {
 
       {!isLoading && !products.length && <Text>Nincsenek termékek.</Text>}
 
+      {/* LOADING */}
+      {isLoading && !displayedProducts.length && !error.errorAtGetProducts && (
+        <View>
+          <Loading loadingText="Termékek betöltése..." />
+        </View>
+      )}
+
       {displayedProducts.length > 0 && (
         <ScrollView
           horizontal={true}
@@ -132,7 +160,10 @@ const Home = (): JSX.Element => {
           showsHorizontalScrollIndicator={false}
           style={styles.mainContainer}>
           <FlatList
-            ListHeaderComponent={TableHeader({orderBy, order}, headerCallback)}
+            ListHeaderComponent={TableHeader(
+              {orderBy: orderByBackup ? orderByBackup : orderBy, order: orderBackup ? orderBackup : order},
+              headerCallback,
+            )}
             data={displayedProducts}
             renderItem={(item: ListRenderItemInfo<IProduct>) => TableRow(item, showDeleteModal)}
             keyExtractor={keyExtractor}
