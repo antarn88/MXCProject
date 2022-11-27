@@ -57,6 +57,7 @@ const Home = (): JSX.Element => {
   }, [backNavigated, displayedProducts, isLoading, order, orderBy, pageIndex]);
 
   const reloadTableAfterSorting = useCallback(async (): Promise<void> => {
+    console.log('reloadTableAfterSorting');
     setDisplayedProducts([]);
     const request = await store.dispatch(
       getProducts({
@@ -70,11 +71,11 @@ const Home = (): JSX.Element => {
       const productListPiece = request.payload as IProduct[];
       setDisplayedProducts(productListPiece);
       setPageIndex((previousValue: number) => previousValue + 1);
-      console.log('Beállítottam a reloadban');
     } else {
       console.error('Hiba a termékek betöltésekor!');
     }
-  }, [backNavigated, order, orderBy]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [backNavigated, order, orderBy, orderBackup, orderByBackup]);
 
   const onPressCreateProduct = useCallback((): void => navigate('/create'), [navigate]);
 
