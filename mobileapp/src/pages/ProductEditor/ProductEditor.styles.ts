@@ -87,4 +87,7 @@ export const styles = StyleSheet.create({
   spinner: {
     marginRight: 5,
   },
+  saveButtonContainer: {
+    flexDirection: 'row',
+  },
 });

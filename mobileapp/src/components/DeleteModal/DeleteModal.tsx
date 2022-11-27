@@ -1,44 +1,44 @@
 import React from 'react';
-import {ActivityIndicator, Modal, Pressable, Text, View} from 'react-native';
+import {ActivityIndicator, Text, TouchableHighlight, View} from 'react-native';
+import Modal from 'react-native-modal/dist/modal';
 
 import {styles} from './DeleteModal.styles';
 
 const DeleteModal = ({modalVisible, setModalVisible, onDeleteProduct, isDeletingProduct}): JSX.Element => {
   return (
-    <View style={[styles.centeredView]}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={[styles.centeredView]}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Biztosan törli a terméket?</Text>
+    <View>
+      <Modal isVisible={modalVisible} animationIn={'fadeIn'} animationOut={'lightSpeedOut'}>
+        <View style={[styles.mainContainer]}>
+          {/* TITLE */}
+          <Text style={[styles.title]}>Biztosan törli a terméket?</Text>
 
-            <View style={[styles.buttonContainer]}>
-              <Pressable
-                style={[styles.button, styles.buttonClose, styles.cancelButton]}
-                onPress={() => setModalVisible(false)}
-                disabled={isDeletingProduct}>
-                <Text style={styles.textStyle}>Mégse</Text>
-              </Pressable>
+          <View style={[styles.buttonContainer]}>
+            {/* CANCEL BUTTON */}
+            <TouchableHighlight
+              disabled={isDeletingProduct}
+              style={[styles.button, isDeletingProduct ? styles.cancelButtonDisabled : styles.cancelButtonActive]}
+              underlayColor={'#c0c0c0'}
+              onPress={() => setModalVisible(false)}>
+              <Text style={[styles.buttonText]}>Mégse</Text>
+            </TouchableHighlight>
 
-              <Pressable
-                style={[styles.button, styles.buttonClose, styles.confirmButton]}
-                onPress={onDeleteProduct}
-                disabled={isDeletingProduct}>
-                {!isDeletingProduct ? (
-                  <Text style={styles.textStyle}>Igen</Text>
-                ) : (
-                  <View style={[styles.loadingBox]}>
-                    <ActivityIndicator size="small" color="white" />
-                    <Text style={[styles.loadingText]}>Törlés...</Text>
+            {/* CONFIRM BUTTON */}
+            <TouchableHighlight
+              disabled={isDeletingProduct}
+              style={[styles.button, isDeletingProduct ? styles.confirmButtonDisabled : styles.confirmButtonActive]}
+              underlayColor={'#d99191'}
+              onPress={onDeleteProduct}>
+              <Text style={[styles.confirmButtonMainText]}>
+                {isDeletingProduct ? (
+                  <View style={[styles.confirmButtonInnerContainer]}>
+                    <ActivityIndicator size="small" color="white" style={[styles.spinner]} />
+                    <Text style={[styles.buttonText]}>Törlés...</Text>
                   </View>
+                ) : (
+                  <Text style={[styles.buttonText]}>Törlés</Text>
                 )}
-              </Pressable>
-            </View>
+              </Text>
+            </TouchableHighlight>
           </View>
         </View>
       </Modal>

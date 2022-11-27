@@ -1,70 +1,52 @@
 import {StyleSheet} from 'react-native';
 
 export const styles = StyleSheet.create({
-  centeredView: {
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalView: {
-    margin: 20,
+  mainContainer: {
     backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  button: {
-    borderRadius: 10,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: '#F194FF',
-  },
-  buttonClose: {
-    backgroundColor: '#2196F3',
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
-    fontSize: 17,
-  },
-  confirmButton: {
-    backgroundColor: '#B22222',
-    color: 'white',
-  },
-  cancelButton: {
-    backgroundColor: 'gray',
-  },
-  loadingText: {
-    color: 'white',
-    marginLeft: 5,
-  },
-  loadingBox: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignContent: 'center',
-    textAlign: 'center',
+    padding: 15,
+    borderRadius: 5,
   },
   buttonContainer: {
     flexDirection: 'row',
-    minWidth: '80%',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    padding: 8,
+    width: '100%',
+  },
+  title: {
+    marginBottom: 15,
+    textAlign: 'center',
+    fontSize: 17,
+    fontWeight: '700',
+  },
+  button: {
+    padding: 7,
+    width: '45%',
+    borderRadius: 5,
+  },
+  cancelButtonActive: {
+    backgroundColor: 'gray',
+  },
+  cancelButtonDisabled: {
+    backgroundColor: '#c0c0c0',
+  },
+  confirmButtonActive: {
+    backgroundColor: '#B22222',
+  },
+  confirmButtonDisabled: {
+    backgroundColor: '#d99191',
+  },
+  buttonText: {
+    color: 'white',
+    textAlign: 'center',
+  },
+  spinner: {
+    marginRight: 5,
+  },
+  confirmButtonMainText: {
+    textAlign: 'center',
+  },
+  confirmButtonInnerContainer: {
+    flexDirection: 'row',
   },
 });

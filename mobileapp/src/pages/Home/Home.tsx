@@ -31,7 +31,7 @@ const Home = (): JSX.Element => {
   const [isDeletingProduct, setIsDeletingProduct] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  let backNavigated = location.state?.backNavigated;
+  const backNavigated = location.state?.backNavigated;
 
   const pageSize = 15;
 

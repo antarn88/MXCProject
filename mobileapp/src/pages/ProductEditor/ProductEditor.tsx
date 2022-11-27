@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect} from 'react';
-import {ActivityIndicator, Text, TextInput, ToastAndroid, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, Text, TextInput, ToastAndroid, TouchableHighlight, View} from 'react-native';
 import {useLocation, useNavigate} from 'react-router-native';
 import {Controller, FieldValues, useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
@@ -184,27 +184,31 @@ const ProductEditor = (): JSX.Element => {
 
         <View style={styles.buttonContainer}>
           <View style={[styles.innerButtonContainer]}>
-            <TouchableOpacity
+            <TouchableHighlight
               style={isLoading ? styles.cancelButtonDisabled : styles.cancelButton}
               onPress={backToProductList}
-              disabled={isLoading}>
+              disabled={isLoading}
+              underlayColor={'#CECACA'}>
               <Text style={[styles.buttonValidText]}>Vissza</Text>
-            </TouchableOpacity>
+            </TouchableHighlight>
           </View>
           <View style={[styles.innerButtonContainer]}>
-            <TouchableOpacity
+            <TouchableHighlight
               disabled={!isValid || isLoading}
               style={!isValid || isLoading ? styles.saveButtonDisabled : styles.saveButton}
+              underlayColor={'#90cbf9'}
               onPress={handleSubmit((fieldValues: FieldValues) => onSubmit(fieldValues))}>
-              {isLoading && <ActivityIndicator style={[styles.spinner]} color="white" size="small" />}
-              <Text style={[styles.buttonValidText]}>
-                {product ? (
-                  <Text>{isLoading ? 'Mentés...' : 'Mentés'}</Text>
-                ) : (
-                  <Text>{isLoading ? 'Létrehozás...' : 'Létrehozás'}</Text>
-                )}
-              </Text>
-            </TouchableOpacity>
+              <View style={[styles.saveButtonContainer]}>
+                {isLoading && <ActivityIndicator style={[styles.spinner]} color="white" size="small" />}
+                <Text style={[styles.buttonValidText]}>
+                  {product ? (
+                    <Text>{isLoading ? 'Mentés...' : 'Mentés'}</Text>
+                  ) : (
+                    <Text>{isLoading ? 'Létrehozás...' : 'Létrehozás'}</Text>
+                  )}
+                </Text>
+              </View>
+            </TouchableHighlight>
           </View>
         </View>
       </View>
