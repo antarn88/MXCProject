@@ -16,8 +16,8 @@ import DeleteModal from '../../components/DeleteModal/DeleteModal';
 import {IAuthState} from '../../interfaces/auth/auth-state.interface';
 import {resetProductsErrors} from '../../store/products/products-slice';
 
-let orderBackup: OrderOption;
-let orderByBackup: OrderByOption;
+let orderBackup: OrderOption = OrderOption.ASC;
+let orderByBackup: OrderByOption = OrderByOption.PRODUCT_NAME;
 
 const Home = (): JSX.Element => {
   const {products, isLoading, error} = useAppSelector<IProductsState>((state: RootState) => state.products);
@@ -31,7 +31,7 @@ const Home = (): JSX.Element => {
   const [isDeletingProduct, setIsDeletingProduct] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const backNavigated = location.state?.backNavigated;
+  let backNavigated = location.state?.backNavigated;
 
   const pageSize = 15;
 
@@ -41,8 +41,8 @@ const Home = (): JSX.Element => {
         getProducts({
           pageIndex,
           limit: pageSize,
-          order: backNavigated && orderBackup ? orderBackup : order,
-          orderBy: backNavigated && orderByBackup ? orderByBackup : orderBy,
+          order: backNavigated ? orderBackup : order,
+          orderBy: backNavigated ? orderByBackup : orderBy,
         }),
       );
       if (request.meta.requestStatus === 'fulfilled') {
@@ -61,8 +61,8 @@ const Home = (): JSX.Element => {
     setDisplayedProducts([]);
     const request = await store.dispatch(
       getProducts({
-        orderBy: backNavigated && orderByBackup ? orderByBackup : orderBy,
-        order: backNavigated && orderBackup ? orderBackup : order,
+        orderBy: backNavigated ? orderByBackup : orderBy,
+        order: backNavigated ? orderBackup : order,
         pageIndex: 0,
         limit: pageSize,
       }),
@@ -74,8 +74,7 @@ const Home = (): JSX.Element => {
     } else {
       console.error('Hiba a termékek betöltésekor!');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [backNavigated, order, orderBy, orderBackup, orderByBackup]);
+  }, [backNavigated, order, orderBy]);
 
   const onPressCreateProduct = useCallback((): void => navigate('/create'), [navigate]);
 
@@ -104,13 +103,14 @@ const Home = (): JSX.Element => {
 
   const keyExtractor = useCallback((_item: IProduct, index: number) => index.toString(), []);
 
-  const headerCallback = useCallback(({newOrder, newOrderBy}: {newOrder: OrderOption; newOrderBy: OrderByOption}) => {
-    orderBackup = newOrder;
-    orderByBackup = newOrderBy;
+  const headerCallback = ({newOrder, newOrderBy}: {newOrder: OrderOption; newOrderBy: OrderByOption}): void => {
+    backNavigated = backNavigated ? false : backNavigated;
+    setPageIndex(0);
     setOrder(newOrder);
     setOrderBy(newOrderBy);
-    setPageIndex(0);
-  }, []);
+    orderBackup = newOrder;
+    orderByBackup = newOrderBy;
+  };
 
   useEffect((): void => {
     reloadTableAfterSorting();
@@ -162,7 +162,7 @@ const Home = (): JSX.Element => {
           style={styles.mainContainer}>
           <FlatList
             ListHeaderComponent={TableHeader(
-              {orderBy: orderByBackup ? orderByBackup : orderBy, order: orderBackup ? orderBackup : order},
+              {orderBy: backNavigated ? orderByBackup : orderBy, order: backNavigated ? orderBackup : order},
               headerCallback,
             )}
             data={displayedProducts}

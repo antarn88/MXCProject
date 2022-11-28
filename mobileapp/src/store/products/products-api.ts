@@ -15,13 +15,11 @@ export const getProducts = createAsyncThunk('products/getProducts', async (pageO
     url: `/products?orderBy=${orderBy}&order=${order}&pageIndex=${pageIndex}&limit=${limit}`,
     method: 'get',
   });
-  // await sleep(500);
   return response.data.content.results as IProduct[];
 });
 
 export const updateProduct = createAsyncThunk('products/updateProduct', async (product: IProduct) => {
   const response = await requestWithAuthHeader({url: `${API_URL}/products/${product.id}`, method: 'put', data: product});
-  // await sleep(8000);
   return response.data;
 });
 
@@ -34,5 +32,3 @@ export const deleteProduct = createAsyncThunk('products/deleteProduct', async (i
   const response = await requestWithAuthHeader({url: `${API_URL}/products/${id}`, method: 'delete'});
   return response.data;
 });
-
-// const sleep = (time: number): Promise<void> => new Promise<void>((resolve) => setTimeout(resolve, time));
