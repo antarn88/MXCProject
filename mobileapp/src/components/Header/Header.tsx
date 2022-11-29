@@ -11,7 +11,7 @@ const Header = (): JSX.Element => {
   const {isLoading, loggedInUser} = useAppSelector<IAuthState>((state: RootState) => state.auth);
   const navigate = useNavigate();
 
-  const onPressLogo = useCallback((): void => navigate('/'), [navigate]);
+  const onPressLogo = useCallback((): void => navigate('/', {state: {backNavigated: true}}), [navigate]);
 
   const onPressLogout = useCallback(async (): Promise<void> => {
     await logout();

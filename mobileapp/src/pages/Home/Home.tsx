@@ -57,7 +57,6 @@ const Home = (): JSX.Element => {
   }, [backNavigated, displayedProducts, isLoading, order, orderBy, pageIndex]);
 
   const reloadTableAfterSorting = useCallback(async (): Promise<void> => {
-    console.log('reloadTableAfterSorting');
     setDisplayedProducts([]);
     const request = await store.dispatch(
       getProducts({
@@ -68,6 +67,7 @@ const Home = (): JSX.Element => {
       }),
     );
     if (request.meta.requestStatus === 'fulfilled') {
+      console.log('reloadTableAfterSorting');
       const productListPiece = request.payload as IProduct[];
       setDisplayedProducts(productListPiece);
       setPageIndex((previousValue: number) => previousValue + 1);
@@ -104,10 +104,15 @@ const Home = (): JSX.Element => {
   const keyExtractor = useCallback((_item: IProduct, index: number) => index.toString(), []);
 
   const headerCallback = ({newOrder, newOrderBy}: {newOrder: OrderOption; newOrderBy: OrderByOption}): void => {
-    backNavigated = backNavigated ? false : backNavigated;
     setPageIndex(0);
-    setOrder(newOrder);
-    setOrderBy(newOrderBy);
+
+    if (order === newOrder && orderBy === newOrderBy) {
+      setOrder((previousValue: OrderOption) => (previousValue === OrderOption.ASC ? OrderOption.DESC : OrderOption.ASC));
+    } else {
+      setOrder(newOrder);
+      setOrderBy(newOrderBy);
+    }
+
     orderBackup = newOrder;
     orderByBackup = newOrderBy;
   };
