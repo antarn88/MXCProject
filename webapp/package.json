@@ -13,7 +13,7 @@
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
     "@types/redux-logger": "^3.0.9",
-    "axios": "^1.2.0",
+    "axios": "^0.27.2",
     "bootstrap": "^5.2.3",
     "material-icons": "^1.12.2",
     "react": "^18.2.0",
