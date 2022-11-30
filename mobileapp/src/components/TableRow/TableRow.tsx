@@ -36,7 +36,7 @@ export const TableRow = ({item}, handleDeleteClick: (event: GestureResponderEven
 
       {/* DELETE */}
       <View style={[styles.rowCell, styles.deleteCell]}>
-        <Text style={styles.alignSelfCenter}>
+        <Text style={[styles.alignSelfCenter]}>
           <Button title="Törlés" color="#B22222" onPress={(event: GestureResponderEvent) => handleDeleteClick(event, item.id)} />
         </Text>
       </View>

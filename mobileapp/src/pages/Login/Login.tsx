@@ -49,13 +49,14 @@ const Login = (): JSX.Element => {
 
   return (
     <View style={[styles.mainContainer]}>
+      {/* LOGIN LABEL */}
       <Text style={[styles.loginLabel]}>
         <MaterialCommunityIcons name="login" size={25} color={'#485FFB'} />
         <Text> Bejelentkezés</Text>
       </Text>
 
       <View style={[styles.loginFormContainer]}>
-        {/* ERROR MESSAGES */}
+        {/* ERROR MESSAGE BOX */}
         {!isLoading && error && (
           <View style={[styles.errorMessageContainer]}>
             <MaterialCommunityIcons name="alert" size={25} style={[styles.errorMessageIcon]} />
@@ -71,6 +72,7 @@ const Login = (): JSX.Element => {
           </View>
         )}
 
+        {/* USERNAME */}
         <View style={[styles.usernameContainer]}>
           <Text>Felhasználónév *</Text>
           <Controller
@@ -90,6 +92,7 @@ const Login = (): JSX.Element => {
           {errors.username && <Text style={[styles.warningText]}>{errors.username.message}</Text>}
         </View>
 
+        {/* PASSWORD */}
         <View>
           <Text>Jelszó *</Text>
           <Controller
@@ -109,6 +112,7 @@ const Login = (): JSX.Element => {
           {errors.password && <Text style={[styles.warningText]}>{errors.password.message}</Text>}
         </View>
 
+        {/* LOGIN BUTTON */}
         <View style={[styles.loginButtonContainer]}>
           {isLoading ? (
             <TouchableOpacity style={[styles.loginButtonDisabled]} disabled={true}>

@@ -8,7 +8,7 @@ const Loading = ({loadingText}: ILoadingProps): JSX.Element => {
   return (
     <View>
       <ActivityIndicator size="large" style={styles.spinner} />
-      <Text style={styles.loadingText}>{loadingText}</Text>
+      <Text style={[styles.loadingText]}>{loadingText}</Text>
     </View>
   );
 };

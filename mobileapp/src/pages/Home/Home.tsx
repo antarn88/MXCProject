@@ -46,7 +46,6 @@ const Home = (): JSX.Element => {
         }),
       );
       if (request.meta.requestStatus === 'fulfilled') {
-        console.log('FETCH KÉRÉS SIKERES, az oldal:', pageIndex);
         const productListPiece = request.payload as IProduct[];
         setDisplayedProducts([...displayedProducts, ...productListPiece]);
         setPageIndex((previousPage: number) => previousPage + 1);
@@ -67,7 +66,6 @@ const Home = (): JSX.Element => {
       }),
     );
     if (request.meta.requestStatus === 'fulfilled') {
-      console.log('reloadTableAfterSorting');
       const productListPiece = request.payload as IProduct[];
       setDisplayedProducts(productListPiece);
       setPageIndex((previousValue: number) => previousValue + 1);
@@ -105,14 +103,12 @@ const Home = (): JSX.Element => {
 
   const headerCallback = ({newOrder, newOrderBy}: {newOrder: OrderOption; newOrderBy: OrderByOption}): void => {
     setPageIndex(0);
-
     if (order === newOrder && orderBy === newOrderBy) {
       setOrder((previousValue: OrderOption) => (previousValue === OrderOption.ASC ? OrderOption.DESC : OrderOption.ASC));
     } else {
       setOrder(newOrder);
       setOrderBy(newOrderBy);
     }
-
     orderBackup = newOrder;
     orderByBackup = newOrderBy;
   };
@@ -139,6 +135,7 @@ const Home = (): JSX.Element => {
 
   return (
     <View style={[styles.mainContainer]}>
+      {/* DELETE MODAL */}
       <DeleteModal
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
@@ -146,11 +143,13 @@ const Home = (): JSX.Element => {
         isDeletingProduct={isDeletingProduct}
       />
 
+      {/* NEW PRODUCT BUTTON */}
       <View style={[styles.newProductContainer]}>
         <Button onPress={onPressCreateProduct} title="Új termék" />
       </View>
 
-      {!isLoading && !products.length && <Text>Nincsenek termékek.</Text>}
+      {/* EMPTY CALLOUT */}
+      {!isLoading && !products.length && <Text style={[styles.noProductsText]}>Nincsenek termékek.</Text>}
 
       {/* LOADING */}
       {isLoading && !displayedProducts.length && !error.errorAtGetProducts && (
@@ -159,6 +158,7 @@ const Home = (): JSX.Element => {
         </View>
       )}
 
+      {/* DATA LIST TABLE */}
       {displayedProducts.length > 0 && (
         <ScrollView
           horizontal={true}

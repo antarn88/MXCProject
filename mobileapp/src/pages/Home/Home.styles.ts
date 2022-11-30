@@ -7,4 +7,8 @@ export const styles = StyleSheet.create({
   newProductContainer: {
     marginVertical: 20,
   },
+  noProductsText: {
+    textAlign: 'center',
+    fontSize: 16,
+  },
 });

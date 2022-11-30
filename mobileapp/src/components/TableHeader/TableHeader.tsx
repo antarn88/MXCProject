@@ -97,7 +97,7 @@ export const TableHeader = (
 
       {/* DELETE  */}
       <View style={[styles.headerCell, styles.deleteCell]}>
-        <Text style={styles.alignSelfCenter}>Törlés</Text>
+        <Text style={[styles.alignSelfCenter]}>Törlés</Text>
       </View>
     </View>
   );

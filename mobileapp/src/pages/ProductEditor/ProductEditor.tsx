@@ -113,9 +113,11 @@ const ProductEditor = (): JSX.Element => {
 
   return (
     <View style={[styles.container]}>
+      {/* PRODUCT EDITOR TITLE */}
       <Text style={[styles.editorTitle]}>{product ? 'Termék szerkesztő' : 'Új termék felvétele'}</Text>
 
       <View style={[styles.formContainer]}>
+        {/* PRODUCT NAME */}
         <View>
           <Text style={[styles.label]}>Terméknév *</Text>
           <Controller
@@ -138,6 +140,7 @@ const ProductEditor = (): JSX.Element => {
           {errors.productName && <Text style={[styles.warningText]}>{errors.productName.message}</Text>}
         </View>
 
+        {/* PRODUCT NUMBER */}
         <View>
           <Text style={[styles.label]}>Cikkszám *</Text>
           <Controller
@@ -160,6 +163,7 @@ const ProductEditor = (): JSX.Element => {
           {errors.productNumber && <Text style={[styles.warningText]}>{errors.productNumber.message}</Text>}
         </View>
 
+        {/* PRICE */}
         <View>
           <Text style={[styles.label]}>Ár *</Text>
           <Controller
@@ -182,20 +186,23 @@ const ProductEditor = (): JSX.Element => {
           {errors.price && <Text style={[styles.warningText]}>{errors.price.message}</Text>}
         </View>
 
-        <View style={styles.buttonContainer}>
+        <View style={[styles.buttonContainer]}>
+          {/* CANCEL BUTTON */}
           <View style={[styles.innerButtonContainer]}>
             <TouchableHighlight
-              style={isLoading ? styles.cancelButtonDisabled : styles.cancelButton}
+              style={[isLoading ? styles.cancelButtonDisabled : styles.cancelButton]}
               onPress={backToProductList}
               disabled={isLoading}
               underlayColor={'#CECACA'}>
               <Text style={[styles.buttonValidText]}>Vissza</Text>
             </TouchableHighlight>
           </View>
+
+          {/* SAVE/CREATE BUTTON */}
           <View style={[styles.innerButtonContainer]}>
             <TouchableHighlight
               disabled={!isValid || isLoading}
-              style={!isValid || isLoading ? styles.saveButtonDisabled : styles.saveButton}
+              style={[!isValid || isLoading ? styles.saveButtonDisabled : styles.saveButton]}
               underlayColor={'#90cbf9'}
               onPress={handleSubmit((fieldValues: FieldValues) => onSubmit(fieldValues))}>
               <View style={[styles.saveButtonContainer]}>
