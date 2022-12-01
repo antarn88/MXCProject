@@ -34,7 +34,8 @@ const Login = () => {
   const onLogin = async (event: FormEvent) => {
     event.preventDefault();
     removeTokenFromLocalStorage();
-    const loginResponse = await store.dispatch(login(watch()));
+    const encodedLoginData = { username: encodeURIComponent(watch().username), password: encodeURIComponent(watch().password) };
+    const loginResponse = await store.dispatch(login(encodedLoginData));
     if (loginResponse.meta.requestStatus === 'fulfilled') {
       const loginResponseData = loginResponse.payload as ILoginResponse;
       setTokenToLocalStorage(loginResponseData.content.accessToken || '');
