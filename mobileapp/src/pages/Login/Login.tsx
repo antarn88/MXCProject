@@ -37,11 +37,17 @@ const Login = (): JSX.Element => {
 
   const onPressLogin = useCallback(
     async (loginData: ILoginRequest): Promise<void> => {
-      const loginResponse = await store.dispatch(login(loginData));
-      if (loginResponse.meta.requestStatus === 'fulfilled') {
-        const loginResponseData = loginResponse.payload as ILoginResponse;
-        setTokenToLocalStorage(loginResponseData.content.accessToken || '');
-        navigate('/');
+      if (loginData.username && loginData.password) {
+        const encodedLoginData = {
+          username: encodeURIComponent(loginData.username),
+          password: encodeURIComponent(loginData.password),
+        } as ILoginRequest;
+        const loginResponse = await store.dispatch(login(encodedLoginData));
+        if (loginResponse.meta.requestStatus === 'fulfilled') {
+          const loginResponseData = loginResponse.payload as ILoginResponse;
+          setTokenToLocalStorage(loginResponseData.content.accessToken || '');
+          navigate('/');
+        }
       }
     },
     [navigate],
